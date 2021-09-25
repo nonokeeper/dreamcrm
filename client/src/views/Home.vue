@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    Hello World!
+    Welcome to this new Vue app : Dream CRM
   </div>
 </template>
 
