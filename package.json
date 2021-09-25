@@ -1,50 +1,37 @@
 {
   "name": "dreamcrm",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Fullstack DreamCRM",
+  "main": "server/index.js",
   "scripts": {
-    "start": "nodemon api/index.js",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/costearnaud/dreamcrm.git"
+  },
+  "keywords": [
+    "CRM",
+    "fullstack",
+    "tailwind",
+    "vue"
+  ],
+  "author": "Arnaud Coste",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/costearnaud/dreamcrm/issues"
+  },
+  "homepage": "https://github.com/costearnaud/dreamcrm#readme",
   "dependencies": {
-    "@tailwindcss/forms": "^0.3.3",
-    "@tailwindcss/postcss7-compat": "^2.0.2",
-    "axios": "^0.21.4",
     "body-parser": "^1.19.0",
-    "core-js": "^3.6.5",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^6.0.6",
-    "nodemon": "^2.0.12",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.11"
+    "mongodb": "^4.1.2"
   },
   "devDependencies": {
-    "@vue/cli-service": "^4.5.13",
-    "@vue/compiler-sfc": "^3.0.0",
-    "autoprefixer": "^9.8.6",
-    "postcss": "^7.0.36",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "nodemon": "^2.0.12"
+  }
 }
