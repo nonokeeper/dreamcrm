@@ -70,13 +70,13 @@
       <div class="mt-8 mb-6 grid grid-cols-3 gap-8">
         <div class="" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getMeta(meta[0],this.customer)">
           <label :for="`u_`+meta[0]" class="block left-1 -top-2 text-gray-500 text-sm">{{ meta[1] }}</label>
-          <input :required="meta[2]" :id="`u_`+meta[0]" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="`u_`+getLastMeta(meta[0])" :value="custData" />
+          <input v-on:keyup="signalChange" :required="meta[2]" :id="`u_`+meta[0]" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="`u_`+getLastMeta(meta[0])" :value="custData" />
         </div>
       </div>
       <div class="flex items-stretch">
         <button type="reset" class="rounded px-2 py-1 text-gray-100 bg-gray-500 hover:bg-gray-600" @click="cancelEdit">Cancel</button>
-        <div class="cursor-pointer rounded ml-4 px-2 py-1 text-gray-100 bg-yellow-600 hover:bg-yellow-700" @click="updateCust(false)">Save</div>
-        <button class="rounded ml-4 px-2 py-1 text-gray-100 bg-blue-600 hover:bg-blue-700" type="submit">Save and Quit</button>
+        <button :disabled="noChange" class="disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-yellow-600 hover:bg-yellow-700" type="button" @click="updateCust(false)">Save</button>
+        <button :disabled="noChange" class="disabled:opacity-50 disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-blue-600 hover:bg-blue-700" type="submit">Save and Quit</button>
       </div>
     </form>
   </div>
@@ -130,6 +130,7 @@ export default {
   data () {
     return {
       loaded: false,
+      noChange: true,
       promise: [],
       customers: [],
       customer: [],
@@ -232,6 +233,9 @@ export default {
         this.hideMessage()
       }, this.delay)
     },
+    signalChange (){
+      this.noChange = false
+    },
     getLastMeta (meta) { // Get only the last parameter name after dot separator
       if (meta.includes('.')) {
         var nb = meta.split('.').length
@@ -275,9 +279,9 @@ export default {
     },
     async cancelEdit () {
       this.customers = await CustomerService.getCustomers()
+      this.edit = false
       this.showMessage = false
       this.message = ''
-      this.edit = false
     },
     cancelCreate () {
       this.$refs.create.reset()

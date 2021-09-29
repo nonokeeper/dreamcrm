@@ -11,7 +11,9 @@ module.exports = {
   variants: {
     backgroundColor: ['responsive', 'hover', 'focus', 'active', 'checked'],
     fontSize: ['responsive', 'hover', 'focus', 'active', 'checked'],
-    fontWeight: ['responsive', 'hover', 'focus']
+    fontWeight: ['responsive', 'hover', 'focus'],
+    opacity: ({ after }) => after(['disabled']),
+    cursor: ({ after }) => after(['disabled'])
   },
   plugins: [
     require('@tailwindcss/forms')
