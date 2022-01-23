@@ -5,20 +5,26 @@
         <svg fill="none" stroke="orange" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-6 h-6"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
     </span>
     <input type="search" v-model="search" name="q" :class="focusMedium"
-      class="py-2 text-sm rounded-md pl-10 text-gray-800 hover:border-yellow-600"
+      class="inset-y-0 left-0 py-2 text-sm rounded-md pl-10 text-gray-800 hover:border-yellow-600"
       placeholder="Search" autocomplete="off">
-    <button @click="createCustomer" class="ml-2 mr-2 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700"><i class="fas fa-plus-circle text-white mr-2"></i>Create a Customer
+    <router-link v-show="loaded" active-class="text-lg text-yellow-200" class="ml-8 inset-y-2 whitespace-nowrap hover:text-yellow-800" to="/customer/editStructure">Edit Customer Structure</router-link>
+    <button @click="createCustomer" class="absolute inset-y-0 right-0 mr-4 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700"><i class="fas fa-plus-circle text-white mr-2"></i>Create a Customer
     </button>
     <span :class="{ invisible: !showMessage}" class="rounded border-l-4 bg-green-400 text-sm text-white px-2 py-3 border-green-800 shadow-xl items-center">
       {{ message }}<i @click="showMessage = false" class="ml-2 far fa-times-circle"></i>
     </span>
-    <button v-show="!loaded" class="inline-flex ml-2 mr-2 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700">
+    <button v-show="!loaded" class="inline-flex ml-8 mr-2 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700">
       <svg class="animate-spin mr-2 h-auto w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-100" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
       Loading...
     </button>
+    
+  </div>
+
+  <div v-show="loaded && !edit && !create" class="mt-2 mb-4">
+    {{ nbCustomers }}
   </div>
 
   <div v-show="loaded && !edit && !create" class="rounded-t-md shadow-lg overflow-hidden">
@@ -28,7 +34,7 @@
           <th :class="medium" class="px-3 py-2">
             <input type="checkbox" @click='checkAll()' v-model="isCheckAll">
           </th>
-          <th class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index">{{ meta[1] }}</th>
+          <th class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index"><span>{{ meta.label }}</span></th>
           <th colspan=2 :class="medium" class="px-3 py-2">
           </th>
         </tr>
@@ -39,7 +45,7 @@
           <td class="px-3 py-2">
             <input type="checkbox" v-bind:value='cust._id' v-model='checkedItems' @change='updateCheckAll()'>
           </td>
-          <td class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getMeta(meta[0],cust)">{{ custData }}</td>
+          <td class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getCustomerDataFromMeta(meta,index,cust)">{{ custData }}</td>
           <td :class="light" class="px-3 py-2">
             <i @click="editCustomer(cust)" class="fas fa-edit text-yellow-600" title="edit"></i>
           </td>
@@ -48,7 +54,7 @@
           </td>
         </tr>
         <tr :class="dark" class="h-1">
-            <td :colspan="customersMeta.length+3"></td>
+            <td :colspan="Object.values(customersMeta).length + 3"></td>
         </tr>
       </tbody>
       <!-- END Show Customer list -->
@@ -68,15 +74,15 @@
     </div>
     <form name="update" ref="updateForm" @submit.prevent="updateCust(true)">
       <div class="mt-8 mb-6 grid grid-cols-3 gap-8">
-        <div class="" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getMeta(meta[0],this.customer)">
-          <label :for="`u_`+meta[0]" class="block left-1 -top-2 text-gray-500 text-sm">{{ meta[1] }}</label>
-          <input v-on:keyup="signalChange" :required="meta[2]" :id="`u_`+meta[0]" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="`u_`+getLastMeta(meta[0])" :value="custData" />
+        <div class="" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getCustomerDataFromMeta(meta,index,this.customer)">
+          <label :for="`u_`+index" class="block left-1 -top-2 text-gray-500 text-sm">{{ meta.label }}</label>
+          <input :required="meta.required" :id="`u_`+index" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="`u_`+index" :value="custData" />
         </div>
       </div>
       <div class="flex items-stretch">
         <button type="reset" class="rounded px-2 py-1 text-gray-100 bg-gray-500 hover:bg-gray-600" @click="cancelEdit">Cancel</button>
-        <button :disabled="noChange" class="disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-yellow-600 hover:bg-yellow-700" type="button" @click="updateCust(false)">Save</button>
-        <button :disabled="noChange" class="disabled:opacity-50 disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-blue-600 hover:bg-blue-700" type="submit">Save and Quit</button>
+        <button class="disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-yellow-600 hover:bg-yellow-700" type="button" @click="updateCust(false)">Save</button>
+        <button class="disabled:opacity-50 disabled:cursor-not-allowed rounded ml-4 px-2 py-1 text-gray-100 bg-blue-600 hover:bg-blue-700" type="submit">Save and Quit</button>
       </div>
     </form>
   </div>
@@ -85,13 +91,13 @@
   <div class="text-red-600" v-if="createErrorFlag && create">{{ createError }}</div>
 
   <!-- BEGIN Create Customer HERE -->
-  <div v-show="create">
+  <div class="w-2/3" v-show="create">
     <form name="create" ref="create" @submit.prevent="createCust">
       <h3 class="text-yellow-800">Create a new Customer</h3>
       <div class="mt-8 mb-6 grid grid-cols-3 gap-8">
         <div class="relative" v-for="(meta, index) in customersMeta" :key="index">
-          <label :for="meta[0]" class="block left-1 -top-2 text-gray-500 text-sm">{{ meta[1] }}</label>
-          <input :required="meta[2]" :id="meta[0]" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="getLastMeta(meta[0])"/>
+          <label :for="index" class="block left-1 -top-2 text-gray-500 text-sm">{{ meta.label }}</label>
+          <input :required="meta.required" :id="index" :class="focusMedium" class="py-2 text-sm rounded-md px-2 text-gray-800" :ref="index"/>
         </div>
       </div>
       <button type="reset" class="rounded px-2 py-1 text-gray-100 bg-gray-500 hover:bg-gray-600" @click="cancelCreate">Cancel</button>
@@ -160,7 +166,12 @@ export default {
   computed: {
     filteredCustomers () {
       return this.customers.filter(cust => this.testCustomer(cust))
+    },
+    nbCustomers () {
+      if (this.filteredCustomers.length > 1) return this.filteredCustomers.length + ' records'
+      else return this.filteredCustomers.length + ' record'
     }
+    
   },
   methods: {
     async createCust () { // Create customer operations
@@ -168,23 +179,40 @@ export default {
       var body = {}
       this.createErrorFlag = false
       this.createError = ''
-      var obj = {}
       /* Reset all */
-      for (var i = 0; i < this.customersMeta.length; i++) {
-        // **** BEGIN Verification part ****
-        if (data === 'email' && !body[data].includes('@')) {
-          this.createErrorFlag = true
-          this.createError = 'E-mail should contain "@" character !'
-        }
-        // **** END Verification part ****
-        var data = this.customersMeta[i][0]
-        var beginData = this.getFirstMeta(data)
-        var endData = this.getLastMeta(data)
-        if (data.includes('.')) { // Hierarchy
-          if (!body[beginData]) body[beginData] = {} // First time initialize with empty object
-          Object.assign(body[beginData],{[endData]: this.$refs[endData].value}) // The tip to find ! Add each value
+      for (var field in this.customersMeta) {
+        var input = this.$refs[field].value // Get value from each field by its ref
+        var level = this.customersMeta[field].levelup
+        var tab = level.split('.')
+        if (level === '') {
+          body[field] = input
         } else {
-          body[data] = this.$refs[endData].value
+          if (tab.length === 1) {
+            if (!body[tab[0]]) body[tab[0]] = {}
+            body[tab[0]][field] = input
+          }
+          if (tab.length === 2) {
+            if (!body[tab[0]][tab[1]]) body[tab[0]][tab[1]] = {}
+            body[tab[0]][tab[1]][field] = input
+          }
+          if (tab.length === 3) {
+            if (!body[tab[0]][tab[1]][tab[2]]) body[tab[0]][tab[1]][tab[2]] = {}
+            body[tab[0]][tab[1]][tab[2]][field] = input
+          }
+          if (tab.length === 4) {
+            if (!body[tab[0]][tab[1]][tab[2]][tab[3]]) body[tab[0]][tab[1]][tab[2]][tab[3]] = {}
+            body[tab[0]][tab[1]][tab[2]][tab[3]][field] = input
+          } 
+          if (tab.length === 5) {
+            if (!body[tab[0]][tab[1]][tab[2]][tab[3]][tab[4]]) body[tab[0]][tab[1]][tab[2]][tab[3][tab[4]]] = {}
+            body[tab[0]][tab[1]][tab[2]][tab[3]][tab[4]][field] = input
+          } 
+        }
+        if (field.includes('email')) {
+          if (!this.validateEmail(input)) { // Email Check
+            this.createErrorFlag = true
+            this.createError = 'Email invalid!'
+          }
         }
       }
       if (!this.createErrorFlag) {
@@ -194,24 +222,50 @@ export default {
         this.customers = await CustomerService.getCustomers()
         this.showMessage = true
         this.create = false
-        // console.log('loaded : ' + this.loaded + ', edit : ' + this.edit + ', create : ' + this.create)
         this.hideAfterDelay()
       }
     },
-    async updateCust (option) { // Update customer operations
-      /* Reset all */
+    validateEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    },
+    async updateCust (option) {
       var body = {}
-      this.updateErrorFlag = false
       this.updateError = ''
-      console.log('updateCust (' + option + ')')
-      /* Reset all */
-      for (var i = 0; i < this.customersMeta.length; i++) {
-        var data = this.customersMeta[i][0]
-        var endData = 'u_' + this.getLastMeta(data)
-        body[data] = this.$refs[endData].value
-        if (data === 'email' && !body[data].includes('@')) {
-          this.updateErrorFlag = true
-          this.updateError = 'E-mail should contain "@" character !'
+      this.updateErrorFlag = false
+      for (var field in this.customersMeta) {
+        var input = this.$refs['u_'+field].value // Get value from each field by its ref
+        var level = this.customersMeta[field].levelup
+        var tab = level.split('.')
+        if (level === '') {
+          body[field] = input
+        } else {
+          if (tab.length === 1) {
+            if (!body[tab[0]]) body[tab[0]] = {}
+            body[tab[0]][field] = input
+          }
+          if (tab.length === 2) {
+            if (!body[tab[0]][tab[1]]) body[tab[0]][tab[1]] = {}
+            body[tab[0]][tab[1]][field] = input
+          }
+          if (tab.length === 3) {
+            if (!body[tab[0]][tab[1]][tab[2]]) body[tab[0]][tab[1]][tab[2]] = {}
+            body[tab[0]][tab[1]][tab[2]][field] = input
+          }
+          if (tab.length === 4) {
+            if (!body[tab[0]][tab[1]][tab[2]][tab[3]]) body[tab[0]][tab[1]][tab[2]][tab[3]] = {}
+            body[tab[0]][tab[1]][tab[2]][tab[3]][field] = input
+          } 
+          if (tab.length === 5) {
+            if (!body[tab[0]][tab[1]][tab[2]][tab[3]][tab[4]]) body[tab[0]][tab[1]][tab[2]][tab[3][tab[4]]] = {}
+            body[tab[0]][tab[1]][tab[2]][tab[3]][tab[4]][field] = input
+          } 
+        } 
+        if (field.includes('email')) {
+          if (!this.validateEmail(input)) { // Email Check
+            this.updateErrorFlag = true
+            this.updateError = 'Email invalid!'
+          }
         }
       }
       if (!this.updateErrorFlag) {
@@ -236,26 +290,23 @@ export default {
     signalChange (){
       this.noChange = false
     },
-    getLastMeta (meta) { // Get only the last parameter name after dot separator
-      if (meta.includes('.')) {
-        var nb = meta.split('.').length
-        return meta.split('.')[nb - 1]
-      } else return meta
-    },
-    getFirstMeta (meta) { // Get only the last parameter name after dot separator
-      if (meta.includes('.')) {
-        var nb = meta.split('.').length
-        return meta.split('.')[0]
-      } else return meta
-    },
-    getMeta (meta, data) {
-      if (meta.includes('.') && meta.split('.')) {
-        if (data[meta.split('.')[0]]) {
-          return data[meta.split('.')[0]][meta.split('.')[1]]
-        } else return ''
-      } else {
-        return data[meta]
-      }
+    getCustomerDataFromMeta (meta, index, cust) { // All potential levels
+    const levelup = meta.levelup
+    var tab = levelup.split('.')
+
+    if (levelup === '')
+      return cust[index] // return the field directly if no hierarchy
+
+    for (var i=0; i< tab.length; i++) { // loop with all levels separated by a dot
+      if (!cust)
+        return '' // as soon as one level does not exist, exit with empty result
+      cust = cust[tab[i]]
+    }
+
+    if (cust)
+      return cust[index]
+
+    return '' // default empty value if the last level does not exist
     },
     hideMessage () {
       this.showMessage = false
@@ -312,27 +363,14 @@ export default {
         this.isCheckAll = false
       }
     },
-    testCustomer (customer) { // Search and filter customers
-      var i = 0
-      var data = ''
-      var dataafter = ''
-      var databefore = ''
+    testCustomer(customer) {
+      if (this.search === '') return true
+      var meta = this.customersMeta
       var test = false
-      for (i = 0; i < this.customersMeta.length; i++) {
-        data = this.customersMeta[i][0]
-        if (data.includes('.') && customer[data]) {
-          databefore = data.split('.')[0]
-          dataafter = data.split('.')[1]
-          if (customer[databefore][dataafter] && customer[databefore][dataafter].toLowerCase().includes(this.search.toLowerCase())) {
-            test = true
-          }
-        } else {
-          if (customer[data]) {
-            if (customer[data].toLowerCase().includes(this.search.toLowerCase())) {
-              test = true
-            }
-          }
-        }
+      for (const index in meta) {
+        var custData = this.getCustomerDataFromMeta (meta[index], index, customer)
+        if (custData && custData.toLowerCase().includes(this.search.toLowerCase()))
+          test = true
       }
       return test
     }
@@ -346,7 +384,6 @@ export default {
       })
       this.customersMeta.then((data) => {
         this.customersMeta = data
-        // console.log('Customer.vue Meta : ' + data)
         this.loaded = true
       })
     } catch (err) {

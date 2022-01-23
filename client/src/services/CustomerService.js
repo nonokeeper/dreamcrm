@@ -1,16 +1,37 @@
 import axios from 'axios'
 
-const url = 'api/customers'
-const urlMeta = 'api/customers/meta'
+const url = '/api/customers'
+const urlMeta = '/api/customers/meta'
 
-console.log('CustomerService.js NODE_ENV : ' + process.env.NODE_ENV)
+//console.log('CustomerService.js NODE_ENV : ' + process.env.NODE_ENV)
 
 class CustomerService {
   // Get Customers Meta
   static async getCustomersMeta () {
     try {
       const res = await axios.get(urlMeta)
-      // console.log('CustomerService res : ' + res.data)
+      return res.data
+    } catch (err) {
+      console.log('CustomerService getCustomersMeta error : ' + err)
+      return (err)
+    }
+  }
+
+  // Update Customers Meta
+  static async updateCustomersMeta (body) {
+    try {
+      const res = await axios.put(urlMeta, body)
+      return res.data
+    } catch (err) {
+      console.log('CustomerService getCustomersMeta error : ' + err)
+      return (err)
+    }
+  }
+
+  // Insert One Field to Customers Meta
+  static async insertCustomersMeta (body) {
+    try {
+      const res = await axios.post(urlMeta, body)
       return res.data
     } catch (err) {
       console.log('CustomerService getCustomersMeta error : ' + err)
