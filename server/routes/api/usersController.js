@@ -9,102 +9,63 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 var jwt = require('jsonwebtoken')
 
-/* Middleware authentification for routes */
-function authenticateToken(req, res) {
+/* Test token for routes */
+function authenticateToken(req) {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1] // Bearer Token
+  //console.log('auth Token : ', token)
 
-  if (!token) { // No bearer token, check connected user tokens
+  if (!token && req.body.state) { // No bearer token given but now we check if the connected user has got some tokens
     const accessToken = req.body.state.user.accessToken
     const refreshToken = req.body.state.user.refreshToken
-    if (!accessToken) {
-      res.status(401).send({auth: false, message: 'Forbidden - no access Token'})
-    }
-    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-          if (err) {
-            console.log('Token invalid, error : ', err)
-            res.status(401)
-          } else {
-            //console.log('OK via refreshToken : ', refreshToken)
-            res.status(200).send(user)
-          }
-        })
-      } else {
-        //console.log('OK via accessToken : ', accessToken)
-        res.status(200).send(user)
+    if (!accessToken) return false
+    try {
+      var decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
+      console.log('decoded access : ', decoded)
+      return true
+    } catch (err1) {
+      try {
+        var decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+        console.log('decoded refresh : ', decoded)
+        return true
+      } catch (err) {
+        console.log('Error1 : ', err)
+        return false
       }
-    })
-  } else {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        console.log('usersController.js -- Error : ', err)
-        res.status(401).send({auth: false, message: 'Token expired or invalid.'})
-      } else res.status(200).send(user)
-    })
+    }
+  } else { // Test of the given bearer Token (any API Call)
+    try {
+      var decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      console.log('decoded access : ', decoded)
+      return true
+    } catch (err) {
+      console.log('Error2 : ', err)
+      return false
+    }
   }
 }
 
-// Post get my infos with authentication
-router.post('/me', (req, res) => {
-  authenticateToken(req, res)
-})
-
-/* Post get my infos
-router.post('/me', (req, res) => {
-  console.log('post me')
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1] // Bearer Token
-  console.log('token : ', token)
-  if (token) { // API Call with bearer token
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        console.log('usersController.js -- Error : ', err)
-        res.status(401).send({auth: false, message: 'Token expired or invalid.'})
-      } else res.status(200).send(user)
-    })
-  }
-  else { // Internal call with token from the connected user
-    const accessToken = req.body.state.user.accessToken
-    const refreshToken = req.body.state.user.refreshToken
-
-    if (!accessToken) {
-      res.status(401).send({auth: false, message: 'No Token provided.'})
-    }
-    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-          if (err) {
-            console.log('Token invalid, error : ', err)
-            res.status(401).send({auth: false, message: 'Token Invalid.'})
-          } else {
-            console.log('OK via refreshToken : ', refreshToken)
-            res.status(200).send(user)
-          }
-        })
-      } else {
-        console.log('OK via accessToken : ', accessToken)
-        res.status(200).send(user)
-      }
-    })
-  }
-}) */
-
 // Get Users Data
 router.get('/', (req,res) => {
-  console.log('req.body : ', req.body)
-  MongoClient.connect(uri, function(err, client)
-  {
-    if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
-    var users = client.db(DATABASE).collection(collection)
+  if (authenticateToken(req)) {
+    MongoClient.connect(uri, function(err, client)
+    {
+      if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
+      console.log('MongoDB connected')
+      var users = client.db(DATABASE).collection(collection)
       users.find({}).toArray(function(err, docs)
         {
           if(err) console.log(err)
           client.close() // Db close, optional but recommended
           res.send(docs)
         })
-  })
+      console.log('users : ', users)
+    })
+  } else {
+    res.statusMessage = 'Forbidden --> bad JWT given!'
+    res.sendStatus(403)
+  }
+  
 })
 
 // Modify users Meta

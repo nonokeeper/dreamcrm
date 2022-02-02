@@ -6,31 +6,42 @@
     <div v-if="status =='loggedIn'" class="place-self-center">
       Menu Connected
     </div>
-    <div v-if="status =='' || status =='error_login'" class="place-self-center">
+    <div v-if="status == '' || status == 'error_login'" class="place-self-center">
       Menu not connected
     </div>
-    {{ status }}
-    <div v-if="status =='' || status =='error_login'" class="place-self-center">
+    <div v-if="status != 'loggedIn'" class="place-self-center">
       <router-link to="/login">Login</router-link>
     </div>
     <div v-if="status =='loggedIn' || status == 'loading'" class="place-self-center">
-      <router-link to="/" @click="logout">Logout</router-link>
+      <div class="relative grid grid-cols-2" @mouseover="showProfileMenu" @mouseleave="hideProfileMenu">
+        <div><i class="fas fa-user-circle"></i></div>
+        <div>{{ user.firstName }}</div>
+        <div v-show="profileMenu"><router-link to="/" @click="logout">Logout</router-link></div>
+      </div>
+      
     </div>
   </header>
 </template>
 
 <script>
-import { mapState } from "vuex"
 
 export default {
   name: 'Header',
-  computed: {
-    ...mapState(['status'])
+  data() {
+    return {
+      profileMenu: false
+    }
   },
   methods: {
     logout() {
       this.$store.commit('logout')
     },
+    showProfileMenu() {
+      this.profileMenu = true
+    },
+    hideProfileMenu() {
+      this.profileMenu = false
+    }
   }
 }
 </script>

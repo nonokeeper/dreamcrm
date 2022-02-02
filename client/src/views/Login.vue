@@ -1,10 +1,9 @@
 <template>
 
   <!-- LOGIN Mode Begin -->
-  
-  <div class="ml-8" v-if="mode === 'login' && (status == '' || status == 'error_login')">
+  <div class="ml-8" v-if="mode == 'login' && (status == '' || status == 'error_login' || status == null)">
     <div class="mt-4 w-1/2">
-      <div class="text-yellow-800 text-xl">Login</div>
+      <div class="text-yellow-800 text-xl">Log in</div>
       <div class="text-gray-500 text-right text-sm">No Account yet?<button class="bg-white hover:bg-yellow-100 text-yellow-800 ml-2 py-1 px-1 border border-yellow-600 rounded shadow" @click="switchToCreateAccount">&nbsp;Create an Account</button></div>
     </div>
     <button v-if="mode === 'login' && status == 'loading'" type="button" class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-yellow-600 hover:bg-yellow-800 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
@@ -54,7 +53,6 @@
   <!-- LOGIN Mode End -->
 
   <!-- CREATE Mode Begin -->
-
   <div class="ml-8" v-if="mode === 'create'">
     <div class="mt-4 w-1/2">
         <div class="text-yellow-800 text-xl">Create an Account</div>
@@ -99,7 +97,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
 import UserService from '@/services/UserService'
 
 export default {
@@ -121,12 +118,6 @@ export default {
       statusCreate: false,
     }
   },
-  mounted () {
-    //console.log('Login.vue Status : '+this.status)
-    //console.log('Login.vue Mode : '+this.mode)
-    //console.log('Login.vue Statut : '+this.statusCreate)
-    //console.log('Login.vue MessageCreate : '+this.messageCreate)
-  },
   computed: {
     formInvalid() {
       if(this.mode == 'create') {
@@ -140,8 +131,7 @@ export default {
         }
       }
       return true
-    },
-    ...mapState(['user','status']),
+    }
   },
   methods: {
     change() {
@@ -174,9 +164,6 @@ export default {
         firstName: this.firstName,
         lastName: this.lastName,
       }
-      //console.log('Login.vue -- len pass : ' , this.password.length)
-      //console.log('Login.vue -- body : ', body)
-      
       if (this.password.length <= 6 ) {
         this.messageCreate = 'Your password must contain more than 6 characters!'
         this.password = this.password2 = ''

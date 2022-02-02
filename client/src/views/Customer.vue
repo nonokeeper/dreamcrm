@@ -8,7 +8,7 @@
       class="inset-y-0 left-0 py-2 text-sm rounded-md pl-10 text-gray-800 hover:border-yellow-600"
       placeholder="Search" autocomplete="off">
     <router-link v-show="loaded" active-class="text-lg text-yellow-200" class="ml-8 inset-y-2 whitespace-nowrap hover:text-yellow-800" to="/customer/editStructure">Edit Customer Structure</router-link>
-    <button @click="createCustomer" class="absolute inset-y-0 right-0 mr-4 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700"><i class="fas fa-plus-circle text-white mr-2"></i>Create a Customer
+    <button v-if="createRights" @click="createCustomer" class="absolute inset-y-0 right-0 mr-4 bg-yellow-600 text-white rounded-lg shadow-lg px-2 py-2 hover:bg-yellow-700"><i class="fas fa-plus-circle text-white mr-2"></i>Create a Customer
     </button>
     <span :class="{ invisible: !showMessage}" class="rounded border-l-4 bg-green-400 text-sm text-white px-2 py-3 border-green-800 shadow-xl items-center">
       {{ message }}<i @click="showMessage = false" class="ml-2 far fa-times-circle"></i>
@@ -46,11 +46,11 @@
             <input type="checkbox" v-bind:value='cust._id' v-model='checkedItems' @change='updateCheckAll()'>
           </td>
           <td class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getCustomerDataFromMeta(meta,index,cust)">{{ custData }}</td>
-          <td :class="light" class="px-3 py-2">
-            <i @click="editCustomer(cust)" class="fas fa-edit text-yellow-600" title="edit"></i>
+          <td v-if="editRights" :class="light" class="px-3 py-2">
+            <i @click="editCustomer(cust)" class="fas fa-edit text-yellow-600 cursor-pointer" title="edit"></i>
           </td>
-          <td :class="light" class="px-3 py-2">
-            <i @click="showCustomerModal(cust)" class="fas fa-trash text-red-600" title="delete"></i>
+          <td v-if="deleteRights" :class="light" class="px-3 py-2">
+            <i @click="showCustomerModal(cust)" class="fas fa-trash text-red-600 cursor-pointer" title="delete"></i>
           </td>
         </tr>
         <tr :class="dark" class="h-1">
@@ -129,6 +129,7 @@
 
 <script>
 import CustomerService from '@/services/CustomerService'
+// import { mapState } from "vuex"
 
 export default {
   name: 'Customer',
@@ -160,7 +161,7 @@ export default {
       title: 'Customers',
       showModal: false,
       showMessage: false,
-      delay: 3000
+      delay: 3000,
     }
   },
   computed: {
@@ -170,8 +171,20 @@ export default {
     nbCustomers () {
       if (this.filteredCustomers.length > 1) return this.filteredCustomers.length + ' records'
       else return this.filteredCustomers.length + ' record'
-    }
-    
+    },
+    // ...mapState(['user','status']),
+    deleteRights () {
+      if(!this.user.roles) return false
+      return this.user.roles.admin
+    },
+    editRights () {
+      if(!this.user.roles) return false
+      return this.user.roles.admin
+    },
+    createRights () {
+      if(!this.user.roles) return false
+      return this.user.roles.admin
+    },
   },
   methods: {
     async createCust () { // Create customer operations
