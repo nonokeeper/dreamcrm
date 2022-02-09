@@ -1,6 +1,8 @@
 <template>
   <div>
-    Account
+    Your first name is {{ user.firstName }}<br/>
+    Status : {{ status }}
+    <div v-if="user.roles.admin">You are an Admin!</div>
   </div>
 </template>
 

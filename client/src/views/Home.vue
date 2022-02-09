@@ -21,7 +21,7 @@ export default {
   },
   computed: {
     userConnected() {
-      //console.log('Home.vue user : ', this.user)
+      //console.log('Home.vue user admin flag : ', this.user.roles.admin)
       if (this.user._id == -1) return false
       else return true
     },

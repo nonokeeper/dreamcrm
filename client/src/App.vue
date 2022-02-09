@@ -4,10 +4,10 @@
     <Header/>
     <div class="space-x-4 md:flex mb-4">
       <div></div>
-      <div class="w-1/4 rounded-md bg-yellow-600 text-white font-semibold py-3 px-6">
+      <div class="w-1/4 mb-8 min-h-screen rounded-md bg-yellow-600 text-white font-semibold py-3 px-6">
         <Sidebar/>
       </div>
-      <div class="w-3/4 rounded-md border-2 border-yellow-600 py-3 px-6">
+      <div class="w-3/4 mb-8 min-h-screen rounded-md border-2 border-yellow-600 py-3 px-6">
         <router-view/>
       </div>
       <div></div>

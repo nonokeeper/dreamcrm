@@ -29,7 +29,7 @@ function authenticateToken(req) {
         console.log('decoded refresh : ', decoded)
         return true
       } catch (err) {
-        console.log('Error1 : ', err)
+        console.log('Error when decoding refreshToken')
         return false
       }
     }
@@ -39,7 +39,7 @@ function authenticateToken(req) {
       console.log('decoded access : ', decoded)
       return true
     } catch (err) {
-      console.log('Error2 : ', err)
+      console.log('No valid access Token given')
       return false
     }
   }

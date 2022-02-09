@@ -3,6 +3,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import Forgot from '@/views/Forgot.vue'
 import Account from '@/views/Account.vue'
+import Setup from '@/views/Setup.vue'
 import Customer from '@/views/Customer.vue'
 import CustomerStructure from '@/views/structure/CustomerStructure.vue'
 
@@ -20,9 +21,15 @@ const routes = [
     linkActiveClass: 'active'
   },
   {
-    path: '/createAccount',
+    path: '/profile',
     name: 'Account',
     component: Account,
+    linkActiveClass: 'active'
+  },
+  {
+    path: '/setup',
+    name: 'Setup',
+    component: Setup,
     linkActiveClass: 'active'
   },
   {

@@ -43,7 +43,7 @@
       <tbody>
         <tr v-for="(cust, id) in filteredCustomers" v-bind:key="id">
           <td class="px-3 py-2">
-            <input type="checkbox" v-bind:value='cust._id' v-model='checkedItems' @change='updateCheckAll()'>
+            <input class="text-yellow-600 focus:outline-yellow-600" type="checkbox" v-bind:value='cust._id' v-model='checkedItems' @change='updateCheckAll()'>
           </td>
           <td class="px-3 py-2" v-for="(meta, index) in customersMeta" v-bind:key="index" :set="custData = getCustomerDataFromMeta(meta,index,cust)">{{ custData }}</td>
           <td v-if="editRights" :class="light" class="px-3 py-2">
