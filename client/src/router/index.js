@@ -6,6 +6,7 @@ import Account from '@/views/Account.vue'
 import Setup from '@/views/Setup.vue'
 import Customer from '@/views/Customer.vue'
 import CustomerStructure from '@/views/structure/CustomerStructure.vue'
+import MarketingCloud from '@/views/MarketingCloud.vue'
 
 const routes = [
   {
@@ -18,6 +19,12 @@ const routes = [
     path: '/forgot',
     name: 'Forgot',
     component: Forgot,
+    linkActiveClass: 'active'
+  },
+  {
+    path: '/marketing',
+    name: 'MarketingCloud',
+    component: MarketingCloud,
     linkActiveClass: 'active'
   },
   {
