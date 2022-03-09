@@ -3,7 +3,7 @@
     Welcome {{ user.firstName }}!
   </div>
   <div v-if="!userConnected">
-    You are not connected
+    You are not connected (v2)
   </div>
 </template>
 
