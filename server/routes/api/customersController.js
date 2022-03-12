@@ -1,3 +1,4 @@
+const { application } = require('express')
 const express = require('express')
 const router = express.Router()
 const mongodb = require('mongodb')
@@ -7,33 +8,43 @@ const DATABASE = 'DreamDb'
 const collection = 'Customers'
 const collectionMeta = 'meta_collections'
 
+const client = new MongoClient(uri)
+
+async function run() {
+  try {
+    // Establish and verify connection
+    await client.connect();
+    await client.db(DATABASE).command({ ping: 1 });
+    console.log("Connected successfully to server");
+  } catch(err) {
+    console.log("Connection KO : ", err);
+    setTimeout(() => { run(); }, 2000); // relance 2s après
+  }
+}
+run();
+
 // Get Customers Data
 router.get('/', function(req,res){
-  MongoClient.connect(uri, function(err, client)
-  {
-    if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
-    var customers = client.db(DATABASE).collection(collection)
-      customers.find({}).toArray(function(err, docs)
-        {
-          if(err) console.log(err)
-          client.close() // Db close
-          res.send(docs)
-        })
+  var customers = client.db(DATABASE).collection(collection)
+  customers.find({}).toArray(function(err, docs) {
+    if(err) {
+      throw err
+    } else {
+      //client.close();
+      res.send(docs)
+    }
   })
 })
 
-// Get Customers Meta collectionMeta
+// Get Customers Meta
 router.get('/meta', (req, res) => {
-  MongoClient.connect(uri, function(err, client)
-  {
-    if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
-    var customersMeta = client.db(DATABASE).collection(collectionMeta)
-    customersMeta.find({collectionName:collection}).toArray(function(err, docs)
-      {
-        if(err) console.log(err)
-        client.close() // Db close
+  var customersMeta = client.db(DATABASE).collection(collectionMeta)
+  customersMeta.find({collectionName:collection}).toArray(function(err, docs) {
+    if(err) {
+      throw err
+    } else {
         res.send(docs[0].fields)
-      })
+      }
   })
 })
 
@@ -85,6 +96,7 @@ router.post('/', (req, res) => {
 })
 
 // Modify a customer
+/*
 router.put('/:id', (req, res) => {
   if (!req.params.id) res.status(400).send('Customer ID Unknown')
   MongoClient.connect(uri, function(err, client)
@@ -94,10 +106,27 @@ router.put('/:id', (req, res) => {
       if (error) console.log(error)
       // console.log('Successfully updated :' + JSON.stringify(result))
       client.close() // Db close
+      
+      res.body._id = req.params.id
+      console.log(res)
       res.status(200).send(result)
     })
   })
+})*/
+
+router.put('/', function(req,res){
+  var idCustomer = req.body._id
+  if (!idCustomer) res.status(400).send('Customer ID Unknown')
+  delete(req.body._id)
+  client.db(DATABASE).collection(collection).updateOne({_id: new mongodb.ObjectId(idCustomer)}, { $set: req.body }, function(err, result) {
+    if(err) {
+      res.status(500).send('Error during MongoDB Update')
+    } else {
+      res.status(200).send(result)
+    }
+  })
 })
+
 
 // Delete a customer
 router.delete('/:id', (req, res) => {
