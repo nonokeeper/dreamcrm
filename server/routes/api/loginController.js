@@ -1,9 +1,8 @@
-const express = require('express')
-const router = express.Router()
+const { router, db } = require ('./mongoDB');
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
-const DATABASE = 'DreamDb'
+
 const collection = 'Users'
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
@@ -27,7 +26,7 @@ router.post('/login', (req, res) => {
    MongoClient.connect(uri, function(err, client)
    {
      if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
-     var users = client.db(DATABASE).collection(collection)
+     var users = db.collection(collection)
  
      users.findOne({username: username}, (err, user) => {
        if(err) {

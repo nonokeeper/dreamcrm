@@ -4,3 +4,5 @@ node_modules
 client/node_modules
 backup
 .gitignore
+# Local Netlify folder
+.netlify
