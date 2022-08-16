@@ -3,22 +3,46 @@ const { router , db, mongodb } = require ('./mongoDB');
 
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
+const DEFAULTSIZE = 20;
 
 // Get Customers Data
 router.get('/', function(req,res){
   console.log('customersController - get Customers Data');
+  var size = DEFAULTSIZE;
 
-  var pageNumber = parseInt(req.query.pageNumber) // Pagination
-  var size = parseInt(req.query.size) // Max number of results
-  var filter = {};
-  console.log('req.query.filter : ', req.query.filter);
-  if (req.query.filter !== null && req.query.filter !== 'undefined' && req.query.filter !== undefined && req.query.filter !== '') {
-      try {
-        filter = JSON.parse(req.query.filter);
-      } catch(err) {
-        console.log('customersController - get / Error : ', err);
-      }
+  var attribute = req.query.meta;
+  var operator = req.query.operator;
+  var value = req.query.val;
+
+  var pageNumber = req.query.pageNumber // Pagination
+  if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
+/*
+  var filters = req.query.filters
+  if (filters) {
+    attribute = filters.meta
+    console.log('attribute :', attribute);
+    operator = filters.operator
+    console.log('operator :', operator);
+    value = filters.val
+    console.log('value :', value);
   }
+*/
+  var filter = {}
+
+  if (operator == 'equals') {
+    filter = {[attribute]: value}
+  };
+  if (operator == 'contains') {
+    var regExpression = new RegExp(value, 'i');
+    filter = {[attribute]: regExpression}
+  };
+
+  console.log('size :', size);
+  console.log('filter :', filter);
+  console.log('attribute :', attribute);
+  console.log('operator :', operator);
+  console.log('value :', value);
+  console.log('req.query :', req.query);
 
   var customers = db.collection(collection)
   customers.countDocuments(filter).then( (count) => {
@@ -36,7 +60,8 @@ router.get('/', function(req,res){
         }
       })
     } else {
-      customers.find(filter).limit(20).toArray(function(err, data) {
+      customers.find(filter).limit(size).toArray(function(err, data) {
+        //console.log('1/data : ', data);
         if(err) {
           res.status(500).send('Error during Customer Find : '+err)
         } else {
