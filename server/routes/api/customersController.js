@@ -4,7 +4,7 @@ console.log("API CustomersController loading...");
 const { router , db, mongodb } = require ('./mongoDB');
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
-const DEFAULTSIZE = 20;
+const DEFAULTSIZE = 25;
 
 const { authenticateToken } = require ('../../security/index.ts');
 
