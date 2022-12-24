@@ -1,4 +1,4 @@
-const { router, db } = require ('./mongoDB');
+const { router, db, client } = require ('./mongoDB');
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
@@ -20,7 +20,7 @@ router.post('/login', (req, res) => {
    const username = req.body.username
    const password = req.body.password
  
-   console.log('username given : ', username)
+   console.log('loginController / post login --> data given : username=', username, ' and password=', password);
  
    // Get user by the given username
    MongoClient.connect(uri, function(err, client)
@@ -29,34 +29,41 @@ router.post('/login', (req, res) => {
      var users = db.collection(collection)
  
      users.findOne({username: username}, (err, user) => {
-       if(err) {
-         console.log('ERROR detected during findOne : ', err)
-         return
-       }
-       console.log('user found inside : ',user)
-       client.close() // Db close, optional but recommended
-       // Check password
-       bcrypt.compare(password, user.password, (err, rez) => {
-         if (err){
-           console.log('index.js server #1 err : ', err)
-         }
-         if (rez) {
-           const accessToken = generateAccessToken(user)
-           const refreshToken = generateRefreshToken(user)
-           const baseResult = {
-             accessToken,
-             refreshToken,
-           }
-           const result = { ...baseResult, ...user } // Merge Token and Connected User data
-           res.status(200).send(result)
-         } else {
-           res.status(401).send('Incorrect Password ('+req.body.password+')')
-           return
-         }
-       })
+      if(err) {
+        console.log('loginController / post login --> ERROR detected during findOne : ', err)
+        return
+      }
+      console.log('loginController / post login --> user found : ',user)
+      client.close() // Db close, optional but recommended
+
+      // Check user Found
+      if(user) {
+        // Check password
+        bcrypt.compare(password, user.password, (err, rez) => {
+          if (err){
+            console.log('index.js server #1 err : ', err)
+          }
+          if (rez) {
+            const accessToken = generateAccessToken(user)
+            const refreshToken = generateRefreshToken(user)
+            const baseResult = {
+              accessToken,
+              refreshToken,
+            }
+            const result = { ...baseResult, ...user } // Merge Token and Connected User data
+            res.status(200).send(result)
+          } else {
+            res.status(401).send('Incorrect Password ('+req.body.password+')')
+            return
+          }
+        })
+      } else {
+        console.log('user not found');
+        res.status(401).send('User not Found! ('+req.body.username+')')
+      }
      })
    })
-})
+});
 
 // Refresh connection thanks to refresh Token
 router.post('/api/refreshToken', (req, res) => {

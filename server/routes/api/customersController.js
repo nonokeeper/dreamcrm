@@ -1,77 +1,77 @@
-const { count } = require('console');
-const { router , db, mongodb } = require ('./mongoDB');
+//const { count } = require('console');
+console.log("API CustomersController loading...");
 
+const { router , db, mongodb } = require ('./mongoDB');
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 20;
 
+const { authenticateToken } = require ('../../security/index.ts');
+
 // Get Customers Data
-router.get('/', function(req,res){
-  console.log('customersController - get Customers Data');
-  var size = DEFAULTSIZE;
+router.get('/', function(req,res) {
+  console.log('customersController / get slash, req query :', req.query);
+  if (authenticateToken(req)) {
+    console.log('customersController / get authenticateToken OK');
+    var size = DEFAULTSIZE;
 
-  var attribute = req.query.meta;
-  var operator = req.query.operator;
-  var value = req.query.val;
+    var attribute = req.query.meta;
+    var operator = req.query.operator;
+    var value = req.query.val;
+    var filter = {};
 
-  var pageNumber = req.query.pageNumber // Pagination
-  if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
-/*
-  var filters = req.query.filters
-  if (filters) {
-    attribute = filters.meta
-    console.log('attribute :', attribute);
-    operator = filters.operator
-    console.log('operator :', operator);
-    value = filters.val
-    console.log('value :', value);
+    var pageNumber = req.query.pageNumber // Pagination
+    if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
+
+    if (operator == 'equals') {
+      filter = {[attribute]: value}
+    };
+    if (operator == 'contains') {
+      var regExpression = new RegExp(value, 'i');
+      filter = {[attribute]: regExpression}
+    };
+
+    console.log('customersController / get slash, filter :', filter);
+    //console.log('customersController / get slash, size :', size);
+    //console.log('customersController / get slash, pageNumber :', pageNumber);
+    //console.log('customersController / get slash, attribute :', attribute);
+    //console.log('customersController / get slash, operator :', operator);
+    //console.log('customersController / get slash, value :', value);
+    
+    var customers = db.collection(collection)
+    customers.countDocuments(filter).then( (count) => {
+      nb = count
+      console.log('customersController / nb :', nb);
+      if (pageNumber >= 1 && nb > size) { // Page number correct and #rows > #todisplay
+        var skip = size * (pageNumber - 1)
+        customers.find(filter).limit(size).skip(skip).toArray(function(err, data) {
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            //console.log('1/result : ', result);
+            res.send(result);
+          }
+        })
+      } else {
+        customers.find(filter).limit(size).toArray(function(err, data) {
+          //console.log('1/data : ', data);
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            //console.log('2/result : ', result);
+            res.send(result);
+          }
+        })
+      }
+    })
+
+  } else {
+    console.log('customersController - get authenticateToken KO');
+    res.statusMessage = 'Forbidden --> bad JWT given!'
+    res.sendStatus(403)
   }
-*/
-  var filter = {}
-
-  if (operator == 'equals') {
-    filter = {[attribute]: value}
-  };
-  if (operator == 'contains') {
-    var regExpression = new RegExp(value, 'i');
-    filter = {[attribute]: regExpression}
-  };
-
-  console.log('size :', size);
-  console.log('filter :', filter);
-  console.log('attribute :', attribute);
-  console.log('operator :', operator);
-  console.log('value :', value);
-  console.log('req.query :', req.query);
-
-  var customers = db.collection(collection)
-  customers.countDocuments(filter).then( (count) => {
-    nb = count
-    console.log('nb :', nb);
-    if (pageNumber >= 1 && nb > size) { // Page number correct and #rows > #todisplay
-      var skip = size * (pageNumber - 1)
-      customers.find(filter).limit(size).skip(skip).toArray(function(err, data) {
-        if(err) {
-          res.status(500).send('Error during Customer Find : '+err)
-        } else {
-          result = {data, nb};
-          //console.log('1/result : ', result);
-          res.send(result);
-        }
-      })
-    } else {
-      customers.find(filter).limit(size).toArray(function(err, data) {
-        //console.log('1/data : ', data);
-        if(err) {
-          res.status(500).send('Error during Customer Find : '+err)
-        } else {
-          result = {data, nb};
-          //console.log('2/result : ', result);
-          res.send(result);
-        }
-      })
-    }
-  });
 
 })
 
@@ -168,5 +168,7 @@ router.get('/:id', (req, res) => {
       })
   })
 })
+
+//console.log("API CustomersController loaded");
 
 module.exports = router

@@ -7,6 +7,8 @@ const uri = process.env.MONGODB_URI
 const client = new MongoClient(uri)
 const db = client.db(DATABASE)
 
+//console.log("uri : ", uri);
+
 async function run() {
     try {
       // Establish and verify connection
@@ -20,4 +22,4 @@ async function run() {
   }
 run();
 
-module.exports = {router, db, mongodb};
+module.exports = {router, db, mongodb, client};
