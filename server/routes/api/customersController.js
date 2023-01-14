@@ -1,5 +1,5 @@
-//const { count } = require('console');
-console.log("API CustomersController loading...");
+// const { count } = require('console');
+// console.log("API CustomersController loading...");
 
 const { router , db, mongodb } = require ('./mongoDB');
 const collection = 'Customers';
@@ -10,7 +10,7 @@ const { authenticateToken } = require ('../../security/index.ts');
 
 // Get Customers Data
 router.get('/', function(req,res) {
-  console.log('customersController / get slash, req query :', req.query);
+  console.log('customersController.js / get slash, req query :', req.query);
   if (authenticateToken(req)) {
     console.log('customersController / get authenticateToken OK');
     var size = DEFAULTSIZE;

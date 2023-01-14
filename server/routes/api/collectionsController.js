@@ -15,7 +15,7 @@ router.post('/:name', (req,res) => {
 
 // Get Collection list
 router.get('/', (req,res) => {
-    console.log('get Collection list');
+    console.log('collectionsController.js / get Collection list');
     db.listCollections().toArray((err, collInfos) => {
         res.send(collInfos);
     });
@@ -23,7 +23,7 @@ router.get('/', (req,res) => {
 
 // Search Collections
 router.get('/:name', (req,res) => {
-    console.log('get Collection search');
+    console.log('collectionsController.js / get Collection search');
     try {
         var string = req.params.name;
         db.listCollections({"name": {$regex: ".*" + string + ".*"}}).toArray((err, collections) => {

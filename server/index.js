@@ -4,7 +4,7 @@ const cors = require('cors')
 require('dotenv').config()
 const favicon = require('serve-favicon')
 
-console.log("Starting...");
+console.log("index.js / Starting the server...");
 
 app.use(express.json())
 app.use(cors())
@@ -37,4 +37,4 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+app.listen(port, () => console.log(`index.js / Server started on port ${port}`));
