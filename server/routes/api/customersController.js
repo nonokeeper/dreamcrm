@@ -1,6 +1,3 @@
-// const { count } = require('console');
-// console.log("API CustomersController loading...");
-
 const { router , db, mongodb } = require ('./mongoDB');
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
@@ -9,7 +6,7 @@ const DEFAULTSIZE = 25;
 const { authenticateToken } = require ('../../security/index.ts');
 
 // Get Customers Data
-router.get('/', function(req,res) {
+router.get('/customers/', function(req,res) {
   console.log('customersController.js / get slash, req query :', req.query);
   if (authenticateToken(req)) {
     console.log('customersController / get authenticateToken OK');
@@ -76,7 +73,7 @@ router.get('/', function(req,res) {
 })
 
 // Get Customers Meta
-router.get('/meta', (req, res) => {
+router.get('/customers/meta', (req, res) => {
   //var customersMeta = db.collection(collectionMeta)
   db.collection(collectionMeta).find({collectionName:collection}).toArray((err, docs) => {
     if(err) {
@@ -97,14 +94,14 @@ router.get('/meta', (req, res) => {
 })
 
 // Modify customers Meta
-router.put('/meta', (req, res) => {
+router.put('/customers/meta', (req, res) => {
   db.collection(collectionMeta).updateOne({collectionName: 'Customers'}, { $set: req.body }, function(error, result) {
     (error)? console.log(error) : res.status(200).send(result)
   })
 })
 
 // Insert one customers Meta
-router.post('/meta', (req, res) => {
+router.post('/customers/meta', (req, res) => {
   // console.log('customersController.js : router.post meta')
   MongoClient.connect(uri, function(err, client)
   {
@@ -132,7 +129,7 @@ router.post('/', (req,res) => {
 })
 
 // Modify a customer
-router.put('/', function(req,res){
+router.put('/customers', function(req,res){
   var idCustomer = req.body._id
   if (!idCustomer) res.status(400).send('Customer ID Unknown')
   delete(req.body._id)
@@ -146,7 +143,7 @@ router.put('/', function(req,res){
 })
 
 // Delete a customer
-router.delete('/:id', (req, res) => {
+router.delete('/customers/:id', (req, res) => {
   if (!req.params.id) res.status(400).send('Customer ID Unknown')
   db.collection(collection).deleteOne({_id: new mongodb.ObjectId(req.params.id)}, (error, result) => {
     (error)? console.log(error) : console.log('Successfully deleted :' + JSON.stringify(result))
@@ -155,18 +152,17 @@ router.delete('/:id', (req, res) => {
 })
 
 // Get Customer by Id
-router.get('/:id', (req, res) => {
-  if (!req.params.id) res.status(400).send('Customer ID Unknown')
-  MongoClient.connect(uri, function(err, client)
-  {
-    if (err) console.log('Error1 : ' + JSON.stringify(err))
-    var customers = db.collection(collection)
-      customers.findOne({_id: new mongodb.ObjectId(req.params.id)}).then( (feedback) => 
-      {
-        client.close() // Db close
-        res.send(feedback)
-      })
-  })
+router.get('/customers/:id', (req, res) => {
+  console.log('params.id = ', req.params.id);
+  if (!req.params.id) {
+    res.status(400).send('Customer ID Unknown')
+  } else {
+    var customers = db.collection(collection);
+    customers.findOne({_id: new mongodb.ObjectId(req.params.id)}).then( (feedback) => 
+    {
+      res.send(feedback)
+    })
+  }
 })
 
 //console.log("API CustomersController loaded");

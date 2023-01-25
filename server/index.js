@@ -10,20 +10,21 @@ app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({ extended: true}))
 
-const customersRoutes = require('./routes/api/customersController')
-//console.log("API Customers Routes loaded");
-app.use('/api/customers', customersRoutes)
-//console.log("API Customers loaded");
-const collectionsRoutes = require('./routes/api/collectionsController')
-app.use('/api/collections', collectionsRoutes)
-//console.log("API Collections loaded");
-const usersRoutes = require('./routes/api/usersController')
-app.use('/api/users', usersRoutes)
-//console.log("API Users loaded");
 const loginRoutes = require('./routes/api/loginController')
 app.use('/api', loginRoutes)
-//console.log("Starting...");
-//console.log("API Login loaded");
+
+const customersRoutes = require('./routes/api/customersController')
+app.use('/api/customers', customersRoutes)
+
+const collectionsRoutes = require('./routes/api/collectionsController')
+app.use('/api/collections', collectionsRoutes)
+
+const usersRoutes = require('./routes/api/usersController')
+app.use('/api/users', usersRoutes)
+
+const dataRoutes = require('./routes/api/dataController')
+app.use('/api/data', dataRoutes)
+
 app.use(favicon(__dirname + '/favicon.ico'));
 
 // Handle production
