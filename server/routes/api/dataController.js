@@ -5,7 +5,7 @@ const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 25;
 
 // import { authenticateToken } from '../../security/index.ts';
-console.log('dataController called');
+console.log('dataController called once');
 
 // Get Metadata
 router.get('/data/meta', (req,res) => {
