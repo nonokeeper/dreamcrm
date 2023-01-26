@@ -2,7 +2,7 @@
   "name": "dreamcrm",
   "version": "1.0.0",
   "engines": {
-    "node": "14.17.1"
+    "node": "18.10.0"
   },
   "description": "Backend DreamCRM",
   "main": "index.js",
