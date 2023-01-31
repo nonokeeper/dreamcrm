@@ -9,7 +9,7 @@ console.log('dataController called');
 
 // Get Metadata
 router.get('/data/meta', (req,res) => {
-  console.log('dataController.js meta > req.query.entity : ', req.query.entity)
+  //console.log('dataController.js meta > req.query.entity : ', req.query.entity)
   db.collection(collectionMeta).find({collectionName:req.query.entity}).toArray((err, docs) => {
     if(err) {
       res.status(500).json({
@@ -28,15 +28,15 @@ router.get('/data/meta', (req,res) => {
   })
 })
 
-// Get Data
+// Get all the records from this entity
 router.get('/data', (req, res) => {
-  console.log('dataController.js > req.query', req.query)
+  //console.log('dataController.js > req.query', req.query)
   var data = db.collection(req.query.entity);
   //console.log('dataController.js > data : ', data)
   
   data.countDocuments().then( (count) => {
     let nb = count
-    console.log('dataController.js > nb :', nb);
+    //console.log('dataController.js > nb :', nb);
     data.find().toArray(function(err, data) {
       if(err) {
         res.status(500).send('dataController.js > Error during Data Find : '+err)
@@ -61,12 +61,27 @@ router.post('/data/:entity', (req,res) => {
   }
 })
 
+// Modify a record
+router.put('/data/:entity', function(req,res){
+  const collection = req.params.entity;
+  const document = req.body._id;
+  console.log(`Update of this id ${document} in the entity : ${collection}`);
+  delete(req.body._id)
+  db.collection(collection).updateOne({_id: new mongodb.ObjectId(document)}, { $set: req.body }, function(err, result) {
+    if(err) {
+      res.status(500).send(`Error during the update of this record ${id} in the entity : ${entity}`)
+    } else {
+      res.status(200).send(result)
+    }
+  })
+})
+
 // Delete an entity record
 router.delete('/data/:entity/:id', (req, res) => {
   // TODO
   const collection = req.params.entity;
   const document = req.params.id;
-  console.log(`Suppression dans ${collection} de l'id : ${document}`);
+  console.log(`Delete of this id ${document} in the entity ${collection} de l'id : `);
 
   db.collection(collection).deleteOne({_id: new mongodb.ObjectId(document)}, (error, result) => {
     (error)? console.log(error) : console.log('Successfully deleted :' + JSON.stringify(result))
