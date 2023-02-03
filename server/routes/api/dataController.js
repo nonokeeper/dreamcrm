@@ -9,7 +9,7 @@ console.log('dataController called');
 
 // Get Metadata
 router.get('/data/meta', (req,res) => {
-  //console.log('dataController.js meta > req.query.entity : ', req.query.entity)
+  console.log('dataController.js meta > req.query.entity : ', req.query.entity)
   db.collection(collectionMeta).find({collectionName:req.query.entity}).toArray((err, docs) => {
     if(err) {
       res.status(500).json({

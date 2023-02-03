@@ -6,7 +6,7 @@ const collectionMeta = 'meta_collections';
 
 // Create Collection
 router.post('/:name', (req,res) => {
-    console.log('createCollection');
+    console.log('collectionsController > createCollection');
     db.createCollection(req.params.name, (err, coll) => {
         (err && err.codeName === "NamespaceExists")? res.send("AE") : res.send(coll.data);
     });
