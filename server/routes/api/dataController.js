@@ -2,7 +2,8 @@ const { router, db, mongodb } = require('./mongoDB');
 
 //const collection = 'Customers';
 const collectionMeta = 'meta_collections';
-const DEFAULTSIZE = 25;
+const DEFAULTSIZE = 20;
+const { authenticateToken } = require ('../../security/index.ts');
 
 // import { authenticateToken } from '../../security/index.ts';
 console.log('dataController called');
@@ -30,10 +31,8 @@ router.get('/data/meta', (req,res) => {
 
 // Get all the records from this entity
 router.get('/data', (req, res) => {
-  //console.log('dataController.js > req.query', req.query)
+/*
   var data = db.collection(req.query.entity);
-  //console.log('dataController.js > data : ', data)
-  
   data.countDocuments().then( (count) => {
     let nb = count
     //console.log('dataController.js > nb :', nb);
@@ -46,13 +45,73 @@ router.get('/data', (req, res) => {
       }
     })
   })
+*/
+  if (authenticateToken(req)) {
+    console.log('dataController > authenticateToken : token valid');
+    var size = DEFAULTSIZE; // Default size
+
+    var entity = db.collection(req.query.entity);
+    var attribute = req.query.meta;
+    var operator = req.query.operator;
+    var value = req.query.val;
+    var pageNumber = req.query.pageNumber // Pagination
+    var filter = {}; // Empty filter
+    if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
+
+    if (operator == 'equals') {
+      filter = {[attribute]: value}
+    };
+    if (operator == 'contains') {
+      var regExpression = new RegExp(value, 'i');
+      filter = {[attribute]: regExpression}
+    };
+
+    console.log('dataController > get /data > filter : ', filter);
+    console.log('dataController > get /data > size :', size);
+    console.log('dataController > get /data > pageNumber :', pageNumber);
+    console.log('dataController > get /data > attribute :', attribute);
+    console.log('dataController > get /data > operator :', operator);
+    console.log('dataController > get /data > value :', value);
+    
+    entity.countDocuments(filter).then( (count) => {
+      nb = count
+      console.log('dataController > get /data > nb :', nb);
+      if (pageNumber >= 1 && nb > size) { // Page number correct and #rows > #todisplay
+        var skip = size * (pageNumber - 1)
+        entity.find(filter).limit(size).skip(skip).toArray(function(err, data) {
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            res.send(result);
+          }
+        })
+      } else {
+        entity.find(filter).limit(size).toArray(function(err, data) {
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            res.send(result);
+          }
+        })
+      }
+    })
+
+  } else {
+    console.log('dataController > authenticateToken : token invalid!');
+    res.statusMessage = 'Forbidden --> bad JWT given!';
+    res.sendStatus(403);
+  }
+
+
 });
 
 // Create an entity record
 router.post('/data/:entity', (req,res) => {
-  console.log('params.entity = ', req.params.entity);
-  if (req.params.entity !== undefined) {
-    db.collection(req.params.entity).insertOne(req.body, (err, result) => {
+  const collection = req.params.entity;
+  if (collection !== undefined) {
+    db.collection(collection).insertOne(req.body, (err, result) => {
       if (err) console.log(`Error Create a ${entity} record : `+err);
       res.status(201).send(result.insertedId)
     })
@@ -78,7 +137,6 @@ router.put('/data/:entity', function(req,res){
 
 // Delete an entity record
 router.delete('/data/:entity/:id', (req, res) => {
-  // TODO
   const collection = req.params.entity;
   const document = req.params.id;
   console.log(`Delete of this id ${document} in the entity ${collection} de l'id : `);
