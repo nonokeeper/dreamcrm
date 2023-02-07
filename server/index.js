@@ -4,7 +4,7 @@ const cors = require('cors')
 require('dotenv').config()
 const favicon = require('serve-favicon')
 require('module-alias/register')
-const { authenticateToken } = require ('@security/index');
+const { authenticateToken } = require ('../server/security/index');
 module.exports = {authenticateToken};
 
 console.log("index.js / Starting the server...");
