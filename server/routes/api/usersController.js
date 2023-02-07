@@ -8,7 +8,8 @@ const collection = 'Users'
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const jwt = require('jsonwebtoken')
-const { authenticateToken } = require ('../../security/index.ts');
+require('module-alias/register');
+const { authenticateToken } = require ('@security/index.ts');
 
 // Get Users Data
 router.get('/', (req,res) => {
