@@ -10,6 +10,9 @@
     "start": "node server/index.js",
     "dev": "nodemon server/index.js"
   },
+  "_moduleAliases": {
+    "@security": "server/security"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nonokeeper/dreamcrm.git"
@@ -35,6 +38,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "mongodb": "^4.1.2",
     "netlify-lambda": "^2.0.15",
     "serve-favicon": "^2.5.0",

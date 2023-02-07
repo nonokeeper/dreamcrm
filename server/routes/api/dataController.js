@@ -1,11 +1,10 @@
 const { router, db, mongodb } = require('./mongoDB');
+require('module-alias/register');
 
-//const collection = 'Customers';
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 20;
-const { authenticateToken } = require ('../../security/index.ts');
+const { authenticateToken } = require ('@security/index.ts');
 
-// import { authenticateToken } from '../../security/index.ts';
 console.log('dataController called');
 
 // Get Metadata
