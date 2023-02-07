@@ -7,9 +7,9 @@ const DATABASE = 'DreamDb'
 const collection = 'Users'
 const bcrypt = require('bcrypt')
 const saltRounds = 10
-const jwt = require('jsonwebtoken')
-//require('module-alias/register');
-const { authenticateToken } = require ('@security/index.ts');
+//const jwt = require('jsonwebtoken')
+
+const { authenticateToken } = require ('@security/index');
 
 // Get Users Data
 router.get('/', (req,res) => {

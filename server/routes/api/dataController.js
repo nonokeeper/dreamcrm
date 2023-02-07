@@ -1,9 +1,8 @@
 const { router, db, mongodb } = require('./mongoDB');
-//require('module-alias/register');
 
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 20;
-const { authenticateToken } = require ('@security/index.ts');
+const { authenticateToken } = require ('@security/index');
 
 console.log('dataController called');
 
