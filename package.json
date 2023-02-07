@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/costearnaud/dreamcrm.git"
+    "url": "git+https://github.com/nonokeeper/dreamcrm.git"
   },
   "keywords": [
     "CRM",
@@ -23,9 +23,9 @@
   "author": "Arnaud Coste",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/costearnaud/dreamcrm/issues"
+    "url": "https://github.com/nonokeeper/dreamcrm/issues"
   },
-  "homepage": "https://github.com/costearnaud/dreamcrm#readme",
+  "homepage": "https://github.com/nonokeeper/dreamcrm#readme",
   "dependencies": {
     "@vueform/toggle": "^2.0.1",
     "aws-sdk": "^2.1223.0",
