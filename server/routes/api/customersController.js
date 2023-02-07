@@ -3,7 +3,8 @@ const collection = 'Customers';
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 25;
 
-const { authenticateToken } = require ('../../security/index.ts');
+require('module-alias/register');
+const { authenticateToken } = require ('@security/index.ts');
 
 // Get Customers Data
 router.get('/customers/', function(req,res) {
