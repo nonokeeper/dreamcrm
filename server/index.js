@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const favicon = require('serve-favicon')
+require('module-alias/register')
 
 console.log("index.js / Starting the server...");
 

@@ -3,7 +3,7 @@ const collection = 'Customers';
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 25;
 
-require('module-alias/register');
+//require('module-alias/register');
 const { authenticateToken } = require ('@security/index.ts');
 
 // Get Customers Data

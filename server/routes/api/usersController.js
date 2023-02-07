@@ -8,7 +8,7 @@ const collection = 'Users'
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const jwt = require('jsonwebtoken')
-require('module-alias/register');
+//require('module-alias/register');
 const { authenticateToken } = require ('@security/index.ts');
 
 // Get Users Data

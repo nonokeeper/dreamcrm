@@ -1,5 +1,5 @@
 const { router, db, mongodb } = require('./mongoDB');
-require('module-alias/register');
+//require('module-alias/register');
 
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 20;
