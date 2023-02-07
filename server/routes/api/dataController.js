@@ -44,7 +44,7 @@ router.get('/data', (req, res) => {
     })
   })
 */
-  if (authenticateToken(req) || true) {
+  if (authenticateToken(req)) {
     console.log('dataController > authenticateToken : token valid');
     var size = DEFAULTSIZE; // Default size
 
