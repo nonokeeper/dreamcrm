@@ -12,10 +12,10 @@ app.use(express.urlencoded({ extended: true}))
 
 const loginRoutes = require('./routes/api/loginController')
 app.use('/api', loginRoutes)
-/*
+
 const customersRoutes = require('./routes/api/customersController')
 app.use('/api/customers', customersRoutes)
-*/
+
 const collectionsRoutes = require('./routes/api/collectionsController')
 app.use('/api/collections', collectionsRoutes)
 
