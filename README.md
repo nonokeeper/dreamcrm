@@ -1,4 +1,5 @@
 # dreamcrm
+Backoffice CRM pour les API CRUD des entités
 
 ## Project setup
 ```
