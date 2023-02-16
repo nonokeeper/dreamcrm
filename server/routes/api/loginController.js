@@ -85,7 +85,7 @@ router.post('/api/refreshToken', (req, res) => {
         const refreshToken = generateAccessToken(user)
         console.log('index.js server Refresh Token required')
         res.send({
-        accessToken: refreshToken,
+          accessToken: refreshToken,
         })
         // TODO : check the user still exists and is authorized
         // Not a middleware there so next() is not needed

@@ -29,21 +29,6 @@ router.get('/data/meta', (req,res) => {
 
 // Get all the records from this entity
 router.get('/data', (req, res) => {
-/*
-  var data = db.collection(req.query.entity);
-  data.countDocuments().then( (count) => {
-    let nb = count
-    //console.log('dataController.js > nb :', nb);
-    data.find().toArray(function(err, data) {
-      if(err) {
-        res.status(500).send('dataController.js > Error during Data Find : '+err)
-      } else {
-        let result = {data, nb};
-        res.send(result);
-      }
-    })
-  })
-*/
   if (authenticateToken(req)) {
     console.log('dataController > authenticateToken : token valid');
     var size = DEFAULTSIZE; // Default size
@@ -78,7 +63,7 @@ router.get('/data', (req, res) => {
         var skip = size * (pageNumber - 1)
         entity.find(filter).limit(size).skip(skip).toArray(function(err, data) {
           if(err) {
-            res.status(500).send('Error during Customer Find : '+err)
+            res.status(500).send('Error during Data Find : '+err)
           } else {
             result = {data, nb};
             res.send(result);
@@ -87,7 +72,7 @@ router.get('/data', (req, res) => {
       } else {
         entity.find(filter).limit(size).toArray(function(err, data) {
           if(err) {
-            res.status(500).send('Error during Customer Find : '+err)
+            res.status(500).send('Error during Data Find : '+err)
           } else {
             result = {data, nb};
             res.send(result);

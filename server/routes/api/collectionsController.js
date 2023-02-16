@@ -15,10 +15,15 @@ router.post('/:name', (req,res) => {
 
 // Get Collection list
 router.get('/', (req,res) => {
-    console.log('collectionsController.js / get Collection list');
+    try {
     db.listCollections().toArray((err, collInfos) => {
+        console.log('collectionsController > get Collection list, Nb = ', collInfos.length);
         res.send(collInfos);
-    });
+    })
+    }
+    catch(err) {
+        console.log('collectionsController > get Collection list / Error :', err);
+    }
 })
 
 // Search Collections
@@ -31,7 +36,7 @@ router.get('/:name', (req,res) => {
             res.send(collections);
         });
     } catch(err) {
-        console.log(err);
+        console.log('collectionsController > search Collection / Error :', err);
     }
 })
 
