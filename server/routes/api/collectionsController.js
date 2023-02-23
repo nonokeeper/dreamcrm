@@ -6,7 +6,7 @@ const collectionMeta = 'meta_collections';
 
 // Create Collection
 router.post('/:name', (req,res) => {
-    console.log('createCollection');
+    console.log('collectionsController > createCollection');
     db.createCollection(req.params.name, (err, coll) => {
         (err && err.codeName === "NamespaceExists")? res.send("AE") : res.send(coll.data);
     });
@@ -15,15 +15,20 @@ router.post('/:name', (req,res) => {
 
 // Get Collection list
 router.get('/', (req,res) => {
-    console.log('get Collection list');
+    try {
     db.listCollections().toArray((err, collInfos) => {
+        console.log('collectionsController > get Collection list, Nb = ', collInfos.length);
         res.send(collInfos);
-    });
+    })
+    }
+    catch(err) {
+        console.log('collectionsController > get Collection list / Error :', err);
+    }
 })
 
 // Search Collections
 router.get('/:name', (req,res) => {
-    console.log('get Collection search');
+    console.log('collectionsController.js / get Collection search');
     try {
         var string = req.params.name;
         db.listCollections({"name": {$regex: ".*" + string + ".*"}}).toArray((err, collections) => {
@@ -31,7 +36,7 @@ router.get('/:name', (req,res) => {
             res.send(collections);
         });
     } catch(err) {
-        console.log(err);
+        console.log('collectionsController > search Collection / Error :', err);
     }
 })
 

@@ -2,18 +2,20 @@
   "name": "dreamcrm",
   "version": "1.0.0",
   "engines": {
-    "node": "14.17.1"
+    "node": "18.10.0"
   },
-  "description": "Fullstack DreamCRM",
-  "main": "server/index.js",
+  "description": "Backend DreamCRM",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index.js",
     "dev": "nodemon server/index.js"
   },
+  "_moduleAliases": {
+    "@security": "server/security"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/costearnaud/dreamcrm.git"
+    "url": "git+https://github.com/nonokeeper/dreamcrm.git"
   },
   "keywords": [
     "CRM",
@@ -24,25 +26,33 @@
   "author": "Arnaud Coste",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/costearnaud/dreamcrm/issues"
+    "url": "https://github.com/nonokeeper/dreamcrm/issues"
   },
-  "homepage": "https://github.com/costearnaud/dreamcrm#readme",
+  "homepage": "https://github.com/nonokeeper/dreamcrm#readme",
   "dependencies": {
     "@vueform/toggle": "^2.0.1",
+    "aws-sdk": "^2.1223.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
+    "module-alias": "^2.2.2",
     "mongodb": "^4.1.2",
+    "netlify-lambda": "^2.0.15",
     "serve-favicon": "^2.5.0",
+    "serverless-http": "^3.0.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.15",
+    "@types/node": "^18.13.0",
     "autoprefixer": "^10.4.2",
     "nodemon": "^2.0.12",
     "postcss": "^8.4.6",
-    "tailwindcss": "^3.0.18"
+    "tailwindcss": "^3.0.18",
+    "typescript": "^4.9.5"
   }
 }

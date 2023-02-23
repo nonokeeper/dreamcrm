@@ -7,43 +7,9 @@ const DATABASE = 'DreamDb'
 const collection = 'Users'
 const bcrypt = require('bcrypt')
 const saltRounds = 10
-var jwt = require('jsonwebtoken')
+//const jwt = require('jsonwebtoken')
 
-/* Test token for routes */
-function authenticateToken(req) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1] // Bearer Token
-  //console.log('auth Token : ', token)
-
-  if (!token && req.body.state) { // No bearer token given but now we check if the connected user has got some tokens
-    const accessToken = req.body.state.user.accessToken
-    const refreshToken = req.body.state.user.refreshToken
-    if (!accessToken) return false
-    try {
-      var decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-      console.log('decoded access : ', decoded)
-      return true
-    } catch (err1) {
-      try {
-        var decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        console.log('decoded refresh : ', decoded)
-        return true
-      } catch (err) {
-        console.log('Error when decoding refreshToken')
-        return false
-      }
-    }
-  } else { // Test of the given bearer Token (any API Call)
-    try {
-      var decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-      console.log('decoded access : ', decoded)
-      return true
-    } catch (err) {
-      console.log('No valid access Token given')
-      return false
-    }
-  }
-}
+const { authenticateToken } = require ('@security/index');
 
 // Get Users Data
 router.get('/', (req,res) => {
@@ -51,7 +17,7 @@ router.get('/', (req,res) => {
     MongoClient.connect(uri, function(err, client)
     {
       if(err) console.log('ERROR detected, body : ' + req.body + ' / error code : ' + err)
-      console.log('MongoDB connected')
+      console.log('usersController / get users --> MongoDB connected')
       var users = client.db(DATABASE).collection(collection)
       users.find({}).toArray(function(err, docs)
         {

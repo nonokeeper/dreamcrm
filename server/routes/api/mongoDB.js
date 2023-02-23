@@ -12,7 +12,7 @@ async function run() {
       // Establish and verify connection
       await client.connect();
       await db.command({ ping: 1 });
-      console.log("mongoDB - Connected successfully to server");
+      console.log("mongoDB.js / MongoDB Connected successfully");
     } catch(err) {
       console.log("Connection KO : ", err);
       setTimeout(() => { run(); }, 2000); // relance 2s après
@@ -20,4 +20,4 @@ async function run() {
   }
 run();
 
-module.exports = {router, db, mongodb};
+module.exports = {router, db, mongodb, client};

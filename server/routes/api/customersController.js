@@ -1,82 +1,79 @@
-const { count } = require('console');
 const { router , db, mongodb } = require ('./mongoDB');
-
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
-const DEFAULTSIZE = 20;
+const DEFAULTSIZE = 25;
+
+const { authenticateToken } = require ('@security/index');
 
 // Get Customers Data
-router.get('/', function(req,res){
-  console.log('customersController - get Customers Data');
-  var size = DEFAULTSIZE;
+router.get('/customers/', function(req,res) {
+  console.log('customersController.js / get slash, req query :', req.query);
+  if (authenticateToken(req)) {
+    console.log('customersController / get authenticateToken OK');
+    var size = DEFAULTSIZE;
 
-  var attribute = req.query.meta;
-  var operator = req.query.operator;
-  var value = req.query.val;
+    var attribute = req.query.meta;
+    var operator = req.query.operator;
+    var value = req.query.val;
+    var filter = {};
 
-  var pageNumber = req.query.pageNumber // Pagination
-  if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
-/*
-  var filters = req.query.filters
-  if (filters) {
-    attribute = filters.meta
-    console.log('attribute :', attribute);
-    operator = filters.operator
-    console.log('operator :', operator);
-    value = filters.val
-    console.log('value :', value);
+    var pageNumber = req.query.pageNumber // Pagination
+    if (req.query.size > 0) size = parseInt(req.query.size) // Max number of results
+
+    if (operator == 'equals') {
+      filter = {[attribute]: value}
+    };
+    if (operator == 'contains') {
+      var regExpression = new RegExp(value, 'i');
+      filter = {[attribute]: regExpression}
+    };
+
+    console.log('customersController / get slash, filter :', filter);
+    //console.log('customersController / get slash, size :', size);
+    //console.log('customersController / get slash, pageNumber :', pageNumber);
+    //console.log('customersController / get slash, attribute :', attribute);
+    //console.log('customersController / get slash, operator :', operator);
+    //console.log('customersController / get slash, value :', value);
+    
+    var customers = db.collection(collection)
+    customers.countDocuments(filter).then( (count) => {
+      nb = count
+      console.log('customersController / nb :', nb);
+      if (pageNumber >= 1 && nb > size) { // Page number correct and #rows > #todisplay
+        var skip = size * (pageNumber - 1)
+        customers.find(filter).limit(size).skip(skip).toArray(function(err, data) {
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            //console.log('1/result : ', result);
+            res.send(result);
+          }
+        })
+      } else {
+        customers.find(filter).limit(size).toArray(function(err, data) {
+          //console.log('1/data : ', data);
+          if(err) {
+            res.status(500).send('Error during Customer Find : '+err)
+          } else {
+            result = {data, nb};
+            //console.log('2/result : ', result);
+            res.send(result);
+          }
+        })
+      }
+    })
+
+  } else {
+    console.log('customersController - get authenticateToken KO');
+    res.statusMessage = 'Forbidden --> bad JWT given!'
+    res.sendStatus(403)
   }
-*/
-  var filter = {}
-
-  if (operator == 'equals') {
-    filter = {[attribute]: value}
-  };
-  if (operator == 'contains') {
-    var regExpression = new RegExp(value, 'i');
-    filter = {[attribute]: regExpression}
-  };
-
-  console.log('size :', size);
-  console.log('filter :', filter);
-  console.log('attribute :', attribute);
-  console.log('operator :', operator);
-  console.log('value :', value);
-  console.log('req.query :', req.query);
-
-  var customers = db.collection(collection)
-  customers.countDocuments(filter).then( (count) => {
-    nb = count
-    console.log('nb :', nb);
-    if (pageNumber >= 1 && nb > size) { // Page number correct and #rows > #todisplay
-      var skip = size * (pageNumber - 1)
-      customers.find(filter).limit(size).skip(skip).toArray(function(err, data) {
-        if(err) {
-          res.status(500).send('Error during Customer Find : '+err)
-        } else {
-          result = {data, nb};
-          //console.log('1/result : ', result);
-          res.send(result);
-        }
-      })
-    } else {
-      customers.find(filter).limit(size).toArray(function(err, data) {
-        //console.log('1/data : ', data);
-        if(err) {
-          res.status(500).send('Error during Customer Find : '+err)
-        } else {
-          result = {data, nb};
-          //console.log('2/result : ', result);
-          res.send(result);
-        }
-      })
-    }
-  });
 
 })
 
 // Get Customers Meta
-router.get('/meta', (req, res) => {
+router.get('/customers/meta', (req, res) => {
   //var customersMeta = db.collection(collectionMeta)
   db.collection(collectionMeta).find({collectionName:collection}).toArray((err, docs) => {
     if(err) {
@@ -97,14 +94,14 @@ router.get('/meta', (req, res) => {
 })
 
 // Modify customers Meta
-router.put('/meta', (req, res) => {
+router.put('/customers/meta', (req, res) => {
   db.collection(collectionMeta).updateOne({collectionName: 'Customers'}, { $set: req.body }, function(error, result) {
     (error)? console.log(error) : res.status(200).send(result)
   })
 })
 
 // Insert one customers Meta
-router.post('/meta', (req, res) => {
+router.post('/customers/meta', (req, res) => {
   // console.log('customersController.js : router.post meta')
   MongoClient.connect(uri, function(err, client)
   {
@@ -132,7 +129,7 @@ router.post('/', (req,res) => {
 })
 
 // Modify a customer
-router.put('/', function(req,res){
+router.put('/customers', function(req,res){
   var idCustomer = req.body._id
   if (!idCustomer) res.status(400).send('Customer ID Unknown')
   delete(req.body._id)
@@ -146,7 +143,7 @@ router.put('/', function(req,res){
 })
 
 // Delete a customer
-router.delete('/:id', (req, res) => {
+router.delete('/customers/:id', (req, res) => {
   if (!req.params.id) res.status(400).send('Customer ID Unknown')
   db.collection(collection).deleteOne({_id: new mongodb.ObjectId(req.params.id)}, (error, result) => {
     (error)? console.log(error) : console.log('Successfully deleted :' + JSON.stringify(result))
@@ -155,18 +152,19 @@ router.delete('/:id', (req, res) => {
 })
 
 // Get Customer by Id
-router.get('/:id', (req, res) => {
-  if (!req.params.id) res.status(400).send('Customer ID Unknown')
-  MongoClient.connect(uri, function(err, client)
-  {
-    if (err) console.log('Error1 : ' + JSON.stringify(err))
-    var customers = db.collection(collection)
-      customers.findOne({_id: new mongodb.ObjectId(req.params.id)}).then( (feedback) => 
-      {
-        client.close() // Db close
-        res.send(feedback)
-      })
-  })
+router.get('/customers/:id', (req, res) => {
+  console.log('params.id = ', req.params.id);
+  if (!req.params.id) {
+    res.status(400).send('Customer ID Unknown')
+  } else {
+    var customers = db.collection(collection);
+    customers.findOne({_id: new mongodb.ObjectId(req.params.id)}).then( (feedback) => 
+    {
+      res.send(feedback)
+    })
+  }
 })
+
+//console.log("API CustomersController loaded");
 
 module.exports = router
