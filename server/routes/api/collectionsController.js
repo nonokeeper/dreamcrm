@@ -10,14 +10,13 @@ router.post('/:name', (req,res) => {
     db.createCollection(req.params.name, (err, coll) => {
         (err && err.codeName === "NamespaceExists")? res.send("AE") : res.send(coll.data);
     });
-    
 })
 
 // Get Collection list
 router.get('/', (req,res) => {
     try {
     db.listCollections().toArray((err, collInfos) => {
-        console.log('collectionsController > get Collection list, Nb = ', collInfos.length);
+        //console.log('collectionsController > get Collection list, Nb = ', collInfos.length);
         res.send(collInfos);
     })
     }
