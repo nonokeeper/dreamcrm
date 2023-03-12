@@ -48,14 +48,14 @@ router.get('/data', (req, res) => {
       var regExpression = new RegExp(value, 'i');
       filter = {[attribute]: regExpression}
     };
-
+/*
     console.log('dataController > get /data > filter : ', filter);
     console.log('dataController > get /data > size :', size);
     console.log('dataController > get /data > pageNumber :', pageNumber);
     console.log('dataController > get /data > attribute :', attribute);
     console.log('dataController > get /data > operator :', operator);
     console.log('dataController > get /data > value :', value);
-    
+*/    
     entity.countDocuments(filter).then( (count) => {
       nb = count
       console.log('dataController > get /data > nb :', nb);
