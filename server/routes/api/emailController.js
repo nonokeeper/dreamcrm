@@ -27,9 +27,7 @@ var message = {
 
 // Send Email to recipients
 router.post('/email', async(req,res) => {
-    //console.log('emailController.js > sendMail > TO : ', req.body.to);
     message.to = req.body.to;
-    //console.log('emailController.js > sendMail > message : ', message);
     let emailValid = false;
     const validity = await isEmailValid(message.to);
     console.log('emailController.js > sendMail > email validity : ', validity);
