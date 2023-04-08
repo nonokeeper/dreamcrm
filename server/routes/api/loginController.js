@@ -1,4 +1,5 @@
-const { router, db, client } = require ('./mongoDB');
+const { db, client } = require ('./mongoDB')
+const router = require('./router')
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
@@ -17,10 +18,12 @@ function generateRefreshToken(user) {
 // API Login
 router.post('/login', (req, res) => {
     // only given values username&password in req.body
-   const username = req.body.username
-   const password = req.body.password
+  const username = req.body.username
+  const password = req.body.password
+  const resultUserKO = {errorMessage : "User not found"}
+  const resultPasswordKO = {errorMessage : "Password incorrect"}
  
-   console.log('loginController / post login --> data given : username=', username, ' and password=', password);
+  console.log('loginController / post login --> data given : username=', username, ' and password=', password);
  
    // Get user by the given username
    MongoClient.connect(uri, function(err, client)
@@ -35,6 +38,7 @@ router.post('/login', (req, res) => {
       }
       console.log('loginController / post login --> user found : ',user)
       client.close() // Db close, optional but recommended
+      
 
       // Check user Found
       if(user) {
@@ -53,13 +57,12 @@ router.post('/login', (req, res) => {
             const result = { ...baseResult, ...user } // Merge Token and Connected User data
             res.status(200).send(result)
           } else {
-            res.status(401).send('Incorrect Password ('+req.body.password+')')
-            return
+            res.status(401).send(resultPasswordKO)
           }
         })
       } else {
         console.log('user not found');
-        res.status(401).send('User not Found! ('+req.body.username+')')
+        res.status(401).send(resultUserKO)
       }
      })
    })
@@ -76,7 +79,7 @@ router.post('/api/refreshToken', (req, res) => {
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
-        return res.sendStatus(401)
+          return res.sendStatus(401)
         }
         // Delete old values to enable the refresh data writing
         delete user.iat

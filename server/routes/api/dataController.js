@@ -1,10 +1,9 @@
-const { router, db, mongodb } = require('./mongoDB');
+const { db, mongodb } = require('./mongoDB');
+const router = require('./router')
 
 const collectionMeta = 'meta_collections';
 const DEFAULTSIZE = 20;
 const { authenticateToken } = require ('@security/index');
-
-console.log('dataController called');
 
 // Get Metadata
 router.get('/data/meta', (req,res) => {
@@ -48,14 +47,7 @@ router.get('/data', (req, res) => {
       var regExpression = new RegExp(value, 'i');
       filter = {[attribute]: regExpression}
     };
-/*
-    console.log('dataController > get /data > filter : ', filter);
-    console.log('dataController > get /data > size :', size);
-    console.log('dataController > get /data > pageNumber :', pageNumber);
-    console.log('dataController > get /data > attribute :', attribute);
-    console.log('dataController > get /data > operator :', operator);
-    console.log('dataController > get /data > value :', value);
-*/    
+  
     entity.countDocuments(filter).then( (count) => {
       nb = count
       console.log('dataController > get /data > nb :', nb);

@@ -1,16 +1,17 @@
 const express = require('express')
-const router = express.Router()
 const DATABASE = 'DreamDb'
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const client = new MongoClient(uri)
 const db = client.db(DATABASE)
+//const collection = 'Log_Email';
 
 async function run() {
     try {
       // Establish and verify connection
       await client.connect();
+      //await db.createCollection(collection);
       await db.command({ ping: 1 });
       console.log("mongoDB.js / MongoDB Connected successfully");
     } catch(err) {
@@ -20,4 +21,4 @@ async function run() {
   }
 run();
 
-module.exports = {router, db, mongodb, client};
+module.exports = {db, mongodb, client};

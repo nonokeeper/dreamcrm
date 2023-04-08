@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const mongodb = require('mongodb')
+const { db, mongodb } = require('./mongoDB');
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const DATABASE = 'DreamDb'
@@ -49,7 +49,6 @@ router.put('/meta', (req, res) => {
 
 // Insert one user Metadata
 router.post('/meta', (req, res) => {
-  // console.log('customersController.js : router.post meta')
   MongoClient.connect(uri, function(err, client)
   {
     if (err) console.log(err)

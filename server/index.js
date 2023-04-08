@@ -4,20 +4,15 @@ const cors = require('cors')
 require('dotenv').config()
 const favicon = require('serve-favicon')
 require('module-alias/register')
-const { authenticateToken } = require ('../server/security/index');
-module.exports = {authenticateToken};
-
-console.log("index.js / Starting the server...");
 
 app.use(express.json())
+
 app.use(cors())
+
 app.use(express.urlencoded({ extended: true}))
 
 const loginRoutes = require('./routes/api/loginController')
 app.use('/api', loginRoutes)
-
-const customersRoutes = require('./routes/api/customersController')
-app.use('/api/customers', customersRoutes)
 
 const collectionsRoutes = require('./routes/api/collectionsController')
 app.use('/api/collections', collectionsRoutes)
@@ -27,6 +22,9 @@ app.use('/api/users', usersRoutes)
 
 const dataRoutes = require('./routes/api/dataController')
 app.use('/api/data', dataRoutes)
+
+const emailRoutes = require('./routes/api/emailController')
+app.use('/api/email', emailRoutes)
 
 app.use(favicon(__dirname + '/favicon.ico'));
 
