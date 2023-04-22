@@ -1,11 +1,9 @@
-const express = require('express')
 const DATABASE = 'DreamDb'
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const client = new MongoClient(uri)
 const db = client.db(DATABASE)
-//const collection = 'Log_Email';
 
 async function run() {
     try {

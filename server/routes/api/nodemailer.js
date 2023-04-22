@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 
-const transport = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     service: "yahoo",
     auth: {
       user: process.env.NM_USER,
@@ -8,4 +8,4 @@ const transport = nodemailer.createTransport({
     },
   });
 
-module.exports = transport
+module.exports = transporter
