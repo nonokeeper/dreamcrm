@@ -26,6 +26,9 @@ app.use('/api/data', dataRoutes)
 const emailRoutes = require('./routes/api/emailController')
 app.use('/api/email', emailRoutes)
 
+const trackingRoutes = require('./routes/api/trackingController')
+app.use('/api/tracking', trackingRoutes)
+
 app.use(favicon(__dirname + '/favicon.ico'));
 
 // Handle production

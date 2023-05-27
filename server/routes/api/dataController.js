@@ -96,7 +96,7 @@ router.post('/data/:entity', (req,res) => {
 })
 
 // Modify a record
-router.put('/data/:entity', function(req,res){
+router.put('/data/:entity', (req,res) => {
   const collection = req.params.entity;
   const document = req.body._id;
   console.log(`Update of this id ${document} in the entity : ${collection}`);
