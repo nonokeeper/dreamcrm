@@ -49,8 +49,10 @@ router.post('/email', async(req,res) => {
                 const sendDate = new Date(); // Date.now();
                 db.collection(collectionEmailLog).insertOne({
                     email: message.to,
+                    jobID: jobID,
                     sendDate: sendDate,
-                    status: "sent"
+                    status: "sent",
+                    openStatus: false
                   })
                 console.log('emailController.js > sendMail > enveloppe : ', info.envelope);
                 res.status(200).send("E-mail sent");
