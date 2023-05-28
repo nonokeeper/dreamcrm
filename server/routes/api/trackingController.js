@@ -1,6 +1,7 @@
 const { client } = require('./mongoDB');
 const router = require('./router');
 let collectionEmailLog = 'Log_Email';
+const DATABASE = 'DreamDb'
 
 // Get Open tracking
 router.get('/tracking/:email/:jobId', async (req,res) => {
@@ -11,6 +12,8 @@ router.get('/tracking/:email/:jobId', async (req,res) => {
         // Establish and verify connection
         await client.connect();
         var db = client.db(DATABASE);
+        await db.command({ ping: 1 });
+        console.log("trackingController.js > MongoDB Connected successfully");
         console.log('trackingController.js > Email : ', req.params['email']);
         console.log('trackingController.js > Job ID : ', req.params['jobId']);
         console.log('trackingController.js > collectionEmailLog : ', collectionEmailLog);
