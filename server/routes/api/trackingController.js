@@ -6,7 +6,7 @@ const DATABASE = 'DreamDb'
 // Get Open tracking
 router.get('/tracking/:email/:jobId', async (req,res) => {
     const email = req.params['email'];
-    const jobID = req.params['jobID'];
+    const jobID = req.params['jobId'];
 
     try {
         // Establish and verify connection
