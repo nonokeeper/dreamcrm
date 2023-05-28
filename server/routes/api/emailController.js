@@ -47,6 +47,7 @@ router.post('/email', async(req,res) => {
                 // TODO Save the send in a log collection
                 // Email address + Sent date + Status
                 const sendDate = new Date(); // Date.now();
+                console.log('emailController.js > collectionEmailLog : ', collectionEmailLog);
                 db.collection(collectionEmailLog).insertOne({
                     email: message.to,
                     jobID: jobID,

@@ -9,7 +9,7 @@ router.get('/tracking/:email/:jobId', (req,res) => {
     
     console.log('trackingController.js > Email : ', req.params['email']);
     console.log('trackingController.js > Job ID : ', req.params['jobId']);
-
+    console.log('trackingController.js > collectionEmailLog : ', collectionEmailLog);
     db.collection(collectionEmailLog).updateOne(
         { email: email, jobID: jobID },
         {
