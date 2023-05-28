@@ -1,4 +1,4 @@
-const { client } = require('./mongoDB');
+const { client, mongodb } = require('./mongoDB');
 const router = require('./router');
 let collectionEmailLog = 'Log_Email';
 const DATABASE = 'DreamDb'
@@ -22,7 +22,7 @@ router.get('/tracking/:email/:jobId', async (req,res) => {
         console.log('trackingController.js > id found : ', id);
         if (id) {
             const result = await db.collection(collectionEmailLog).updateOne(
-                { _id: ObjectId(id._id) },
+                { _id: new mongodb.ObjectId(id._id) },
                 {
                     $set: { openStatus: true}
                 }
