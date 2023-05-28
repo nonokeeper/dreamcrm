@@ -1,6 +1,6 @@
 const { db } = require('./mongoDB');
 const router = require('./router');
-const collectionEmailLog = process.env.LOG_EMAIL;
+let collectionEmailLog = process.env.LOG_EMAIL;
 
 // Get Open tracking
 router.get('/tracking/:email/:jobId', (req,res) => {
