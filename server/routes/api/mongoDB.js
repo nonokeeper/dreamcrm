@@ -3,13 +3,12 @@ const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const client = new MongoClient(uri)
-var db = undefined
+var db = client.db(DATABASE);
 
 async function run() {
     try {
       // Establish and verify connection
       await client.connect();
-      db = client.db(DATABASE);
       //await db.createCollection(collection);
       await db.command({ ping: 1 });
       console.log("mongoDB.js > MongoDB Connected successfully");
