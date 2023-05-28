@@ -18,7 +18,7 @@ router.get('/tracking/:email/:jobId', async (req,res) => {
         console.log('trackingController.js > Job ID : ', req.params['jobId']);
         console.log('trackingController.js > collectionEmailLog : ', collectionEmailLog);
 
-        const id = await db.collection(collectionEmailLog).findOne({ $and: [ { email: email }, { jobID: jobID } ] });
+        const id = await db.collection(collectionEmailLog).findOne({ $and: [ { jobID: jobID }, { email: email }, { openStatus: false} ] });
         console.log('trackingController.js > id found : ', id);
         if (id) {
             const result = await db.collection(collectionEmailLog).updateOne(
