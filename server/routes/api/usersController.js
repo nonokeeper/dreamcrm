@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { db, mongodb } = require('./mongoDB');
+const { db, mongodb } = require('./mongoDB')
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const DATABASE = 'DreamDb'
@@ -9,7 +9,8 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 //const jwt = require('jsonwebtoken')
 
-const { authenticateToken } = require ('@security/index');
+//const { authenticateToken } = require ('@security/index');
+const { authenticateToken } = require ('../../security/index')
 
 // Get Users Data
 router.get('/', (req,res) => {
