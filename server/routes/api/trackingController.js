@@ -18,17 +18,17 @@ router.get('/tracking/:email/:jobId', async (req,res) => {
         console.log('trackingController.js > Job ID : ', jobID);
         console.log('trackingController.js > collectionEmailLog : ', collectionEmailLog);
 
-        const id = await db.collection(collectionEmailLog).findOne({ $and: [ { jobID: jobID }, { email: email }, { openStatus: false} ] });
-        console.log('trackingController.js > id found : ', id);
-        if (id) {
+        //const id = await db.collection(collectionEmailLog).findOne({ $and: [ { jobID: jobID }, { email: email }, { openStatus: false} ] });
+        //console.log('trackingController.js > id found : ', id);
+        //if (id) {
             const result = await db.collection(collectionEmailLog).updateOne(
-                { _id: new mongodb.ObjectId(id._id) },
+                { jobID: jobID , email: email },
                 {
                     $set: { openStatus: true}
                 }
             );
             console.log('trackingController.js > update Result : ', result);
-        }
+        //}
         res.status(200).send("Open tracking done");
     } catch(err) {
         res.status(500).send("Tracking error : "+err);
