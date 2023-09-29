@@ -39,7 +39,6 @@ router.post('/login', (req, res) => {
       console.log('loginController / post login --> user found : ',user)
       client.close() // Db close, optional but recommended
       
-
       // Check user Found
       if(user) {
         // Check password
