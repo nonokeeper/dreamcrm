@@ -2,7 +2,7 @@
   "name": "dreamcrm",
   "version": "1.0.0",
   "engines": {
-    "node": "14.17.1"
+    "node": ">=14.17.1"
   },
   "description": "Backend DreamCRM",
   "main": "index.js",
@@ -34,7 +34,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^4.1.2",
     "netlify-lambda": "^2.0.15",
     "serve-favicon": "^2.5.0",
