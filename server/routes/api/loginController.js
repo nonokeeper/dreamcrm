@@ -20,7 +20,7 @@ router.post('/login', (req, res) => {
    const username = req.body.username
    const password = req.body.password
  
-   console.log('loginController / post login --> data given : username=', username, ' and password=', password);
+   console.log('loginController / post login --> data given : username=', username);
  
    // Get user by the given username
    MongoClient.connect(uri, function(err, client)
@@ -34,8 +34,9 @@ router.post('/login', (req, res) => {
         return
       }
       console.log('loginController / post login --> user found : ',user)
-      client.close() // Db close, optional but recommended
-
+      if (client) {
+        client.close() // Db close, optional but recommended
+      }
       // Check user Found
       if(user) {
         // Check password

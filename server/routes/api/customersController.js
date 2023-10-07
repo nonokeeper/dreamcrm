@@ -1,6 +1,3 @@
-//const { count } = require('console');
-console.log("API CustomersController loading...");
-
 const { router , db, mongodb } = require ('./mongoDB');
 const collection = 'Customers';
 const collectionMeta = 'meta_collections';
@@ -32,11 +29,6 @@ router.get('/', function(req,res) {
     };
 
     console.log('customersController / get slash, filter :', filter);
-    //console.log('customersController / get slash, size :', size);
-    //console.log('customersController / get slash, pageNumber :', pageNumber);
-    //console.log('customersController / get slash, attribute :', attribute);
-    //console.log('customersController / get slash, operator :', operator);
-    //console.log('customersController / get slash, value :', value);
     
     var customers = db.collection(collection)
     customers.countDocuments(filter).then( (count) => {
