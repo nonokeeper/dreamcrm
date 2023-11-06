@@ -5,20 +5,25 @@ const { db } = require ('./mongoDB');
 const collectionMeta = 'meta_collections';
 
 // Create Collection
-router.post('/:name', (req,res) => {
+router.post('/:name', async (req,res) => {
     console.log('createCollection');
-    db.createCollection(req.params.name, (err, coll) => {
-        (err && err.codeName === "NamespaceExists")? res.send("AE") : res.send(coll.data);
-    });
-    
+    const result = await db.createCollection(req.params.name)
+    if (result.ok) {
+        res.send(result.data)
+    } else {
+        res.send("AE")
+    }
 })
 
 // Get Collection list
-router.get('/', (req,res) => {
+router.get('/', async (req,res) => {
     console.log('get Collection list');
-    db.listCollections().toArray((err, collInfos) => {
-        res.send(collInfos);
-    });
+    //const list = await db.listCollections({"name": "meta_collections"}).toArray();
+    const list = await db.listCollections({}, {nameOnly: true}).toArray();
+    console.log('get Collection list, list : ', list);
+    const result = list.filter((list) => list.name !== "meta_collections");
+    console.log('get Collection list, result : ', result);
+    res.send(result);
 })
 
 // Search Collections
@@ -41,40 +46,24 @@ router.get('/infos/:name', (req,res) => {
     try {
         var customersMeta = db.collection(collectionMeta);
         customersMeta.find({"collectionName":req.params.name}).toArray((err, docs) => {
+            //console.log('res : ', res);
+            console.log('docs : ', docs);
             if(err) {
                 res.status(500).json({
                   success:false,
                   message: err.message
                 })
             }
-            if (docs[0] != undefined) {
-                res.send(docs[0].fields)
-            } else {
-                res.status(204).json({
-                    success:true,
-                    message: "No Content"
-                })
-            }
+            (docs[0] !== undefined)? res.send(docs[0].fields):res.send({})
         });
-/*
-        var string = req.params.name;
-        console.log('name : ', string);
-        db.listCollections({"name": string}).toArray((err, collection) => {
-            console.log('collection : ',collection);
-            res.send(collection);
-        });
-*/
-
-/* TIPS a retenir
-var name = req.params.name;
-var value = req.params.value;
-var query = {};
-query[name] = value;
-collection.findOne(query, function (err, item) { ... });
-*/
-
     } catch(err) {
         console.log(err);
+    }
+
+    try {
+        
+    } catch(err) {
+
     }
 })
 

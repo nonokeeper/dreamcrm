@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const mongodb = require('mongodb')
+const { db } = require ('./mongoDB');
 const MongoClient = mongodb.MongoClient
 const uri = process.env.MONGODB_URI
 const DATABASE = 'DreamDb'
 const collection = 'Users'
 const bcrypt = require('bcrypt')
 const saltRounds = 10
-const jwt = require('jsonwebtoken')
+//const jwt = require('jsonwebtoken')
 const { authenticateToken } = require ('../../security/index.ts');
 
 // Get Users Data
@@ -123,10 +124,15 @@ router.delete('/:id', (req, res) => {
 })
 
 // Get User data by Id
-router.get('/:id', (req, res) => {
-  console.log('get by Id')
+router.get('/:id', async(req, res) => {
+  console.log('get by Id');
+  
   if (!req.params.id || !mongodb.ObjectId.isValid(req.params.id)) res.status(400).send('User ID Unknown')
   else {
+    const user = await db.collection(collection).findOne({_id: new mongodb.ObjectId(req.params.id)})
+    console.log('user : ', JSON.stringify(user));
+    res.send(user);
+    /*
     MongoClient.connect(uri, (err, client) =>
     {
       if (err) console.log('usersController Error : ' + JSON.stringify(err))
@@ -137,6 +143,24 @@ router.get('/:id', (req, res) => {
         console.log('Result : ',result)
         client.close() // Db close
       })
+    })
+    */
+  }
+})
+
+// Get User data by username
+router.get('/username/:username', (req, res) => {
+  console.log('get by username')
+  if (!req.params.username) res.status(400).send('Username is missing')
+  else {
+    MongoClient.connect(uri, async (err, client) =>
+    {
+      if (err) console.log('usersController Error : ' + JSON.stringify(err))
+      var users = client.db(DATABASE).collection(collection);
+      var user = await users.findOne({username: req.params.username});
+      res.send(user);
+      console.log('User : ',user);
+      client.close();
     })
   }
 })
